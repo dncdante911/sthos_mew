@@ -1,0 +1,1074 @@
+/* ==========================================================================
+   StormHosting UA - Domain Pages Styles
+   ========================================================================== */
+
+/* Domain Hero Sections */
+.domain-hero,
+.whois-hero,
+.dns-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.domain-hero::before,
+.whois-hero::before,
+.dns-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/assets/images/domain-pattern.svg') center/cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.domain-hero .container,
+.whois-hero .container,
+.dns-hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Search Forms */
+.domain-search-form,
+.whois-search-form,
+.dns-search-form {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.domain-input-group .input-group-text {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+}
+
+.domain-input-group .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-weight: 500;
+}
+
+.domain-input-group .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.domain-input-group .form-control:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.domain-input-group .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-weight: 500;
+}
+
+.domain-input-group .form-select option {
+    background: var(--dark-color);
+    color: white;
+}
+
+/* Quick Type Buttons */
+.quick-types {
+    margin-top: 1rem;
+}
+
+.quick-type-btn {
+    margin: 0.25rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.quick-type-btn:hover,
+.quick-type-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Domain Statistics */
+.domain-stats {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+/* Domain Zone Cards */
+.domain-zone-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.domain-zone-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-color);
+}
+
+.domain-zone-card .card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border: none;
+}
+
+.domain-zone {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.domain-type {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.price-display {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.price-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.price-period {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: 0.25rem;
+}
+
+.price-category {
+    margin: 1rem 0;
+}
+
+.domain-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.domain-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 0.875rem;
+}
+
+.domain-features li:last-child {
+    border-bottom: none;
+}
+
+.domain-features i {
+    margin-right: 0.5rem;
+}
+
+/* Feature Items */
+.feature-item {
+    padding: 2rem 1.5rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+/* Search Results */
+.domain-result-card,
+.whois-result-card,
+.dns-result-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.result-header.text-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.result-header.text-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.result-header.text-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.result-header h3 {
+    margin: 1rem 0 0.5rem;
+    font-weight: 700;
+}
+
+.result-header .status {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.result-body {
+    padding: 2rem;
+}
+
+/* Price Info */
+.price-info {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+}
+
+.price-info .price-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.price-info .price-period {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.action-buttons .btn {
+    margin: 0.5rem;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+}
+
+/* Domain Benefits */
+.domain-benefits {
+    margin: 2rem 0;
+}
+
+.domain-benefits .benefit {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+}
+
+.domain-benefits .benefit:last-child {
+    border-bottom: none;
+}
+
+.domain-benefits i {
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+
+/* Alternative Actions */
+.alternative-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.alternative-actions .btn {
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+}
+
+/* WHOIS Specific Styles */
+.whois-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.whois-section h5 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.whois-section h5 i {
+    margin-right: 0.5rem;
+}
+
+.whois-data .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.whois-data .data-row:last-child {
+    border-bottom: none;
+}
+
+.whois-data .label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    flex: 0 0 40%;
+}
+
+.whois-data .value {
+    flex: 1;
+    text-align: right;
+    word-break: break-word;
+}
+
+.name-servers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.name-server {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.raw-whois {
+    background: #2d3748;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.raw-whois pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* DNS Specific Styles */
+.dns-table-wrapper {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.dns-records-table {
+    margin: 0;
+    background: white;
+}
+
+.dns-records-table thead th {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.dns-records-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.dns-records-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.record-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.type-a { background: #28a745; color: white; }
+.type-aaaa { background: #17a2b8; color: white; }
+.type-mx { background: #ffc107; color: #212529; }
+.type-cname { background: #6f42c1; color: white; }
+.type-txt { background: #fd7e14; color: white; }
+.type-ns { background: #20c997; color: white; }
+.type-soa { background: #6c757d; color: white; }
+
+.txt-value {
+    max-width: 300px;
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+/* DNS Actions */
+.dns-actions {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dns-actions .btn {
+    margin: 0.5rem;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--secondary-color);
+}
+
+.loading-state .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Info Cards */
+.info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.info-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+/* Zone Cards */
+.zone-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.zone-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.zone-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.zone-server {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: 0.25rem;
+}
+
+/* Tool Cards */
+.tool-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    height: 100%;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.tool-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+/* Privacy Section */
+.privacy-benefits {
+    margin: 2rem 0;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.benefit-item:last-child {
+    border-bottom: none;
+}
+
+.benefit-item i {
+    margin-right: 1rem;
+    font-size: 1.5rem;
+}
+
+.benefit-item span {
+    font-weight: 500;
+}
+
+/* Privacy Visual */
+.privacy-visual {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.before-after {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.before-after h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.whois-data {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    border: 1px solid #dee2e6;
+}
+
+.whois-data.protected .data-line {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.data-line {
+    padding: 0.25rem 0;
+}
+
+/* Transfer Steps */
+.transfer-visual {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.transfer-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.step {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem 1rem;
+    backdrop-filter: blur(5px);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: white;
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.step-text {
+    font-weight: 500;
+    color: white;
+}
+
+/* Transfer Benefits */
+.transfer-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+}
+
+.transfer-benefits li {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    font-size: 1.125rem;
+}
+
+.transfer-benefits i {
+    margin-right: 1rem;
+    font-size: 1.25rem;
+}
+
+/* DNS Management Features */
+.dns-features {
+    margin: 2rem 0;
+}
+
+.dns-features .feature-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dns-features .feature-item:last-child {
+    border-bottom: none;
+}
+
+.dns-features .feature-item i {
+    margin-right: 1.5rem;
+    font-size: 2rem;
+    margin-top: 0.5rem;
+}
+
+.dns-features h5 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.dns-features p {
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+/* DNS Editor Preview */
+.dns-editor-preview {
+    background: #2d3748;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.editor-header {
+    background: #4a5568;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.window-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.control.close { background: #ff5f57; }
+.control.minimize { background: #ffbd2e; }
+.control.maximize { background: #28ca42; }
+
+.window-title {
+    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.editor-content {
+    padding: 1.5rem;
+    color: #e2e8f0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.dns-record {
+    display: grid;
+    grid-template-columns: 60px 1fr 2fr 60px;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #4a5568;
+    align-items: center;
+}
+
+.dns-record:last-child {
+    border-bottom: none;
+}
+
+.dns-record.new {
+    background: rgba(72, 187, 120, 0.1);
+    border-radius: 5px;
+    padding: 0.5rem;
+    animation: highlight 2s ease;
+}
+
+@keyframes highlight {
+    0% { background: rgba(72, 187, 120, 0.3); }
+    100% { background: rgba(72, 187, 120, 0.1); }
+}
+
+.record-type {
+    color: #63b3ed;
+    font-weight: 600;
+}
+
+.record-name {
+    color: #f7fafc;
+}
+
+.record-value {
+    color: #68d391;
+}
+
+.record-ttl {
+    color: #fbb6ce;
+    text-align: right;
+}
+
+/* DNS Issues */
+.issue-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.issue-icon {
+    flex-shrink: 0;
+}
+
+.issue-icon i {
+    font-size: 3rem;
+}
+
+.issue-content h4 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.issue-content p {
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
+
+.issue-content ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.issue-content li {
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+
+/* DNS Servers Section */
+.our-dns-servers {
+    position: relative;
+    overflow: hidden;
+}
+
+.our-dns-servers::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/assets/images/network-pattern.svg') center/cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.our-dns-servers .container {
+    position: relative;
+    z-index: 2;
+}
+
+.dns-servers {
+    margin: 2rem 0;
+}
+
+.server-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+}
+
+.server-item:last-child {
+    border-bottom: none;
+}
+
+.server-item i {
+    margin-right: 1rem;
+    font-size: 1.5rem;
+}
+
+.server-name {
+    flex: 1;
+    font-size: 1.125rem;
+}
+
+.server-ip {
+    font-family: 'Courier New', monospace;
+    opacity: 0.8;
+}
+
+.dns-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.dns-stats .stat-item {
+    text-align: center;
+}
+
+.dns-stats .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.dns-stats .stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+    .domain-search-form,
+    .whois-search-form,
+    .dns-search-form {
+        padding: 1.5rem;
+    }
+    
+    .before-after {
+        grid-template-columns: 1fr;
+    }
+    
+    .transfer-steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .dns-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .dns-stats .stat-number {
+        font-size: 2rem;
+    }
+    
+    .issue-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .dns-record {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: left;
+    }
+    
+    .record-ttl {
+        text-align: left;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .domain-zone-card .card-header {
+        padding: 1rem;
+    }
+    
+    .domain-zone {
+        font-size: 1.25rem;
+    }
+    
+    .price-amount {
+        font-size: 1.5rem;
+    }
+    
+    .feature-icon,
+    .info-icon,
+    .tool-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .alternative-actions {
+        flex-direction: column;
+    }
+    
+    .transfer-steps {
+        grid-template-columns: 1fr;
+    }
+    
+    .dns-stats {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .server-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .whois-data .data-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .whois-data .value {
+        text-align: left;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .domain-hero,
+    .whois-hero,
+    .dns-hero {
+        padding: 3rem 0;
+    }
+    
+    .result-header,
+    .result-body {
+        padding: 1.5rem;
+    }
+    
+    .price-info .price-amount {
+        font-size: 2rem;
+    }
+    
+    .action-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+    
+    .dns-table-wrapper {
+        font-size: 0.875rem;
+    }
+    
+    .txt-value {
+        max-width: 200px;
+    }
+}
