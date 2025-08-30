@@ -1,138 +1,178 @@
 <?php
-// Защита от прямого доступа
-if (!defined('SECURE_ACCESS')) {
-    die('Direct access not permitted');
-}
+// Захист від прямого доступу
+define('SECURE_ACCESS', true);
 
-// Настройки страницы
-$page_title = 'Домени - StormHosting UA';
-$meta_description = 'Реєстрація доменів .ua, .com.ua, .kiev.ua та інших зон в Україні. WHOIS lookup, DNS перевірка, трансфер доменів. Найкращі ціни та підтримка 24/7.';
-$meta_keywords = 'домени україна, реєстрація доменів, .ua домени, .com.ua домени, whois, dns, трансфер доменів';
-$page_css = 'domains';
-$page_js = 'domains';
-$need_api = true;
+// Конфігурація сторінки
+$page = 'domains';
+$page_title = 'Доменні послуги - StormHosting UA | Реєстрація .ua доменів';
+$meta_description = 'Доменні послуги від StormHosting UA: реєстрація .ua доменів, WHOIS перевірка, DNS налаштування, трансфер доменів. Найкращі ціни в Україні.';
+$meta_keywords = 'домени .ua, реєстрація доменів україна, whois перевірка, dns налаштування, трансфер доменів';
 
-// Получаем статистику доменов
-try {
-    if (defined('DB_AVAILABLE') && DB_AVAILABLE) {
-        // Популярные домены
-        $popular_domains = db_fetch_all(
-            "SELECT zone, price_registration, 
-                    CASE WHEN zone LIKE '%.ua' THEN 1 ELSE 0 END as is_ua_domain
-             FROM domain_zones 
-             WHERE is_popular = 1 AND is_active = 1 
-             ORDER BY is_ua_domain DESC, price_registration ASC 
-             LIMIT 6"
-        );
-        
-        // Статистика
-        $domain_stats = db_fetch_one(
-            "SELECT 
-                COUNT(*) as total_zones,
-                COUNT(CASE WHEN zone LIKE '%.ua' THEN 1 END) as ua_zones,
-                MIN(price_registration) as min_price,
-                COUNT(CASE WHEN is_popular = 1 THEN 1 END) as popular_zones
-             FROM domain_zones WHERE is_active = 1"
-        );
-        
-        // Последние зарегистрированные домены (заглушка)
-        $recent_domains = [
-            'mycompany.ua', 'startup.com.ua', 'business.kiev.ua', 
-            'shop.com', 'service.org.ua', 'project.net.ua'
+// Додаткові CSS та JS файли для цієї сторінки
+$additional_css = [
+    '/assets/css/pages/domains2.css'
+];
+
+$additional_js = [
+    '/assets/js/domains.js'
+];
+
+// Підключення конфігурації та БД
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/includes/header.php';
+// Функції-заглушки якщо не визначені
+if (!function_exists('t')) {
+    function t($key, $def = '') { 
+        $translations = [
+            'domains_title' => 'Доменні послуги',
+            'domains_subtitle' => 'Знайдіть та зареєструйте ідеальний домен',
+            'site_name' => 'StormHosting UA'
         ];
-        
-    } else {
-        throw new Exception('Database not available');
+        return $translations[$key] ?? $def ?: $key; 
     }
-} catch (Exception $e) {
-    // Fallback данные
-    $popular_domains = [
-        ['zone' => '.ua', 'price_registration' => 200, 'is_ua_domain' => 1],
-        ['zone' => '.com.ua', 'price_registration' => 150, 'is_ua_domain' => 1],
-        ['zone' => '.pp.ua', 'price_registration' => 120, 'is_ua_domain' => 1],
-        ['zone' => '.kiev.ua', 'price_registration' => 180, 'is_ua_domain' => 1],
-        ['zone' => '.com', 'price_registration' => 350, 'is_ua_domain' => 0],
-        ['zone' => '.net', 'price_registration' => 450, 'is_ua_domain' => 0]
-    ];
-    
-    $domain_stats = ['total_zones' => 25, 'ua_zones' => 18, 'min_price' => 120, 'popular_zones' => 6];
-    $recent_domains = ['example.ua', 'test.com.ua', 'demo.kiev.ua'];
 }
 
-include 'includes/header.php';
-?>
+if (!function_exists('escapeOutput')) {
+    function escapeOutput($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); }
+}
 
+// ВАЖЛИВО: Додаємо функцію formatPrice
+if (!function_exists('formatPrice')) {
+    function formatPrice($price, $currency = 'грн') {
+        return number_format($price, 0, ',', ' ') . ' ' . $currency;
+    }
+}
+
+// Тестові дані для демонстрації (замініть на реальні запити до БД)
+$domain_stats = [
+    'total_zones' => 25,
+    'ua_zones' => 18,
+    'min_price' => 99,
+    'registered_today' => 47
+];
+
+$popular_domains = [
+    [
+        'zone' => '.ua',
+        'price_registration' => 150,
+        'price_renewal' => 150,
+        'domain_type' => 'Український домен',
+        'is_ua_domain' => true
+    ],
+    [
+        'zone' => '.com.ua',
+        'price_registration' => 99,
+        'price_renewal' => 99,
+        'domain_type' => 'Український домен',
+        'is_ua_domain' => true
+    ],
+    [
+        'zone' => '.kiev.ua',
+        'price_registration' => 120,
+        'price_renewal' => 120,
+        'domain_type' => 'Київський домен',
+        'is_ua_domain' => true
+    ],
+    [
+        'zone' => '.pp.ua',
+        'price_registration' => 110,
+        'price_renewal' => 110,
+        'domain_type' => 'Персональний домен',
+        'is_ua_domain' => true
+    ],
+    [
+        'zone' => '.com',
+        'price_registration' => 399,
+        'price_renewal' => 399,
+        'domain_type' => 'Міжнародний домен',
+        'is_ua_domain' => false
+    ],
+    [
+        'zone' => '.net',
+        'price_registration' => 450,
+        'price_renewal' => 450,
+        'domain_type' => 'Міжнародний домен',
+        'is_ua_domain' => false
+    ]
+];
+
+$recent_domains = [
+    'example-site.com.ua',
+    'mycompany.ua',
+    'webstore.kiev.ua',
+    'blog.pp.ua',
+    'portfolio.com.ua',
+    'startup.ua'
+];
+
+// Підключення header
+
+?>
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/home.css">
+    <!-- Calculator CSS -->
+     <link rel="stylesheet" href="/assets/css/pages/domains2.css">
+     
 <!-- Domains Hero -->
 <section class="domain-hero py-5">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold mb-4">Домени для вашого бізнесу</h1>
-                <p class="lead mb-4">Знайдіть та зареєструйте ідеальний домен для вашого сайту. Підтримуємо всі популярні українські та міжнародні доменні зони.</p>
+                <p class="lead mb-4">
+                    Знайдіть та зареєструйте ідеальний домен для вашого сайту.
+                    Підтримуємо всі популярні українські та міжнародні доменні зони.
+                </p>
                 
-                <!-- Quick Domain Search -->
-                <div class="domain-search-quick">
-                    <form id="quickDomainSearch" class="d-flex gap-2 mb-4">
-                        <input type="hidden" id="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-                        <div class="input-group flex-grow-1">
-                            <span class="input-group-text">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" 
-                                   class="form-control form-control-lg" 
-                                   id="quickDomainName"
-                                   placeholder="введіть назву домену"
-                                   pattern="[a-zA-Z0-9-]+"
-                                   maxlength="50">
-                        </div>
-                        <select class="form-select form-select-lg" id="quickDomainZone" style="max-width: 150px;">
-                            <option value=".ua">.ua</option>
-                            <option value=".com.ua">.com.ua</option>
-                            <option value=".com">.com</option>
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-                    
-                    <div id="quickSearchResults"></div>
-                </div>
-                
-                <div class="hero-actions">
-                    <a href="/domains/register" class="btn btn-light btn-lg me-3">
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a href="/pages/domains/register.php" class="btn btn-primary btn-lg">
                         <i class="bi bi-plus-circle"></i>
                         Зареєструвати домен
                     </a>
-                    <a href="/domains/transfer" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-arrow-right-circle"></i>
-                        Перенести домен
+                    <a href="/pages/domains/whois.php" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-search"></i>
+                        WHOIS перевірка
                     </a>
+                </div>
+                
+                <div class="domain-features">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Миттєва активація</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Безкоштовне DNS керування</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Підтримка 24/7</span>
+                    </div>
                 </div>
             </div>
             
             <div class="col-lg-6">
-                <div class="hero-visual text-center">
-                    <div class="domain-illustration">
-                        <div class="domain-bubble" data-aos="fade-up" data-aos-delay="100">
-                            <i class="bi bi-globe"></i>
-                            <span>.ua</span>
-                        </div>
-                        <div class="domain-bubble" data-aos="fade-up" data-aos-delay="200">
-                            <i class="bi bi-building"></i>
-                            <span>.com.ua</span>
-                        </div>
-                        <div class="domain-bubble" data-aos="fade-up" data-aos-delay="300">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>.kiev.ua</span>
-                        </div>
-                        <div class="domain-bubble" data-aos="fade-up" data-aos-delay="400">
-                            <i class="bi bi-person"></i>
-                            <span>.pp.ua</span>
-                        </div>
-                        <div class="domain-bubble central" data-aos="zoom-in" data-aos-delay="500">
-                            <i class="bi bi-lightning"></i>
-                            <span>StormHosting</span>
-                        </div>
+                <div class="domain-illustration">
+                    <div class="domain-bubble" data-aos="fade-up" data-aos-delay="100">
+                        <i class="bi bi-globe"></i>
+                        <span>.ua</span>
+                    </div>
+                    <div class="domain-bubble" data-aos="fade-up" data-aos-delay="200">
+                        <i class="bi bi-building"></i>
+                        <span>.com.ua</span>
+                    </div>
+                    <div class="domain-bubble" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>.kiev.ua</span>
+                    </div>
+                    <div class="domain-bubble" data-aos="fade-up" data-aos-delay="400">
+                        <i class="bi bi-person"></i>
+                        <span>.pp.ua</span>
+                    </div>
+                    <div class="domain-bubble central" data-aos="zoom-in" data-aos-delay="500">
+                        <i class="bi bi-lightning"></i>
+                        <span>StormHosting</span>
                     </div>
                 </div>
             </div>
@@ -164,21 +204,21 @@ include 'includes/header.php';
             </div>
             <div class="col-6 col-md-3">
                 <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Підтримка</div>
+                    <div class="stat-number"><?php echo $domain_stats['registered_today']; ?></div>
+                    <div class="stat-label">Зареєстровано сьогодні</div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Services Grid -->
+<!-- Domain Services -->
 <section class="domain-services py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Послуги для доменів</h2>
-                <p class="section-subtitle">Повний спектр послуг для управління вашими доменами</p>
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="section-title">Наші доменні послуги</h2>
+                <p class="section-subtitle">Повний спектр послуг для роботи з доменами</p>
             </div>
         </div>
         
@@ -190,14 +230,14 @@ include 'includes/header.php';
                         <i class="bi bi-plus-circle"></i>
                     </div>
                     <h4>Реєстрація доменів</h4>
-                    <p>Швидка реєстрація доменів у всіх популярних зонах з миттєвою активацією.</p>
+                    <p>Зареєструйте домен у популярних українських та міжнародних зонах за найкращими цінами.</p>
                     <ul class="service-features">
                         <li><i class="bi bi-check"></i> Миттєва активація</li>
-                        <li><i class="bi bi-check"></i> Конкурентні ціни</li>
+                        <li><i class="bi bi-check"></i> Всі популярні зони</li>
                         <li><i class="bi bi-check"></i> Безкоштовний DNS</li>
                     </ul>
-                    <a href="/domains/register" class="btn btn-primary w-100 mt-auto">
-                        Зареєструвати домен
+                    <a href="/pages/domains/register.php" class="btn btn-primary w-100 mt-auto">
+                        Зареєструвати
                     </a>
                 </div>
             </div>
@@ -206,16 +246,16 @@ include 'includes/header.php';
             <div class="col-lg-3 col-md-6">
                 <div class="service-card h-100">
                     <div class="service-icon">
-                        <i class="bi bi-arrow-right-circle"></i>
+                        <i class="bi bi-arrow-left-right"></i>
                     </div>
                     <h4>Трансфер доменів</h4>
-                    <p>Безкоштовне перенесення доменів від інших реєстраторів з продовженням на рік.</p>
+                    <p>Перенесіть свої домени до нас та отримайте кращі умови обслуговування.</p>
                     <ul class="service-features">
                         <li><i class="bi bi-check"></i> Безкоштовний трансфер</li>
-                        <li><i class="bi bi-check"></i> +1 рік продовження</li>
+                        <li><i class="bi bi-check"></i> Збереження налаштувань</li>
                         <li><i class="bi bi-check"></i> Збереження DNS</li>
                     </ul>
-                    <a href="/domains/transfer" class="btn btn-outline-primary w-100 mt-auto">
+                    <a href="/pages/domains/transfer.php" class="btn btn-outline-primary w-100 mt-auto">
                         Перенести домен
                     </a>
                 </div>
@@ -234,7 +274,7 @@ include 'includes/header.php';
                         <li><i class="bi bi-check"></i> Всі доменні зони</li>
                         <li><i class="bi bi-check"></i> Безкоштовно</li>
                     </ul>
-                    <a href="/domains/whois" class="btn btn-outline-primary w-100 mt-auto">
+                    <a href="/pages/domains/whois.php" class="btn btn-outline-primary w-100 mt-auto">
                         Перевірити WHOIS
                     </a>
                 </div>
@@ -253,7 +293,7 @@ include 'includes/header.php';
                         <li><i class="bi bi-check"></i> Діагностика</li>
                         <li><i class="bi bi-check"></i> Експорт даних</li>
                     </ul>
-                    <a href="/domains/dns" class="btn btn-outline-primary w-100 mt-auto">
+                    <a href="/pages/domains/dns.php" class="btn btn-outline-primary w-100 mt-auto">
                         Перевірити DNS
                     </a>
                 </div>
@@ -296,7 +336,7 @@ include 'includes/header.php';
         </div>
         
         <div class="text-center mt-4">
-            <a href="/domains/register" class="btn btn-primary btn-lg">
+            <a href="/pages/domains/register.php" class="btn btn-primary btn-lg">
                 Переглянути всі зони
                 <i class="bi bi-arrow-right"></i>
             </a>
@@ -317,108 +357,50 @@ include 'includes/header.php';
                     <div class="recent-domain-item" style="animation-delay: <?php echo $index * 0.1; ?>s">
                         <i class="bi bi-check-circle text-success"></i>
                         <span><?php echo escapeOutput($domain); ?></span>
-                        <small class="text-muted">щойно зареєстрований</small>
+                        <small class="text-muted">щойно зареєстровано</small>
                     </div>
                     <?php endforeach; ?>
                 </div>
                 
-                <div class="activity-stats mt-4">
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <div class="stat-number">1000+</div>
-                            <div class="stat-label">Доменів цього місяця</div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-number">5000+</div>
-                            <div class="stat-label">Активних доменів</div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-number">99.9%</div>
-                            <div class="stat-label">Аптайм DNS</div>
-                        </div>
-                    </div>
+                <div class="mt-4">
+                    <a href="/pages/domains/register.php" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i>
+                        Приєднатися до них
+                    </a>
                 </div>
             </div>
             
             <div class="col-lg-6">
-                <div class="activity-visual">
-                    <div class="activity-chart">
-                        <canvas id="domainChart" width="400" height="300"></canvas>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Захищені домени</h5>
+                            <p>Всі домени захищені від несанкціонованого трансферу</p>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Domain Features -->
-<section class="domain-features py-5 bg-primary text-white">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="fw-bold">Чому обирають наші домени?</h2>
-                <p class="lead">Максимум можливостей для вашого онлайн бізнесу</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-lightning"></i>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Миттєва активація</h5>
+                            <p>Домени активуються протягом 5 хвилин після оплати</p>
+                        </div>
                     </div>
-                    <h4>Миттєва активація</h4>
-                    <p>Домен активується автоматично протягом кількох хвилин після оплати</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-shield-check"></i>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Підтримка 24/7</h5>
+                            <p>Наша команда завжди готова допомогти вам</p>
+                        </div>
                     </div>
-                    <h4>Захист конфіденційності</h4>
-                    <p>Безкоштовний захист персональних даних у WHOIS базі для всіх доменів</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-gear"></i>
-                    </div>
-                    <h4>Зручне управління</h4>
-                    <p>Інтуїтивна панель управління з усіма необхідними функціями</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </div>
-                    <h4>Автопродовження</h4>
-                    <p>Автоматичне продовження доменів для запобігання втрати контролю</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-dns"></i>
-                    </div>
-                    <h4>Безкоштовний DNS</h4>
-                    <p>Управління DNS записами через зручний інтерфейс без додаткової плати</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-item text-center">
-                    <div class="feature-icon white">
-                        <i class="bi bi-headphones"></i>
-                    </div>
-                    <h4>Підтримка 24/7</h4>
-                    <p>Кваліфікована технічна підтримка українською мовою цілодобово</p>
                 </div>
             </div>
         </div>
@@ -426,66 +408,31 @@ include 'includes/header.php';
 </section>
 
 <!-- CTA Section -->
-<section class="domain-cta py-5 bg-light">
+<section class="cta-section py-5">
     <div class="container">
-        <div class="row align-items-center">
+        <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <h2 class="fw-bold mb-3">Готові зареєструвати свій домен?</h2>
-                <p class="lead mb-0">Почніть будувати свій онлайн бізнес з надійного домену від StormHosting UA</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="/domains/register" class="btn btn-primary btn-lg">
-                    <i class="bi bi-plus-circle"></i>
-                    Зареєструвати домен
-                </a>
+                <div class="cta-content">
+                    <h2 class="mb-4">Готові зареєструвати свій домен?</h2>
+                    <p class="lead mb-4">
+                        Почніть свій онлайн-бізнес з ідеального домену. 
+                        Миттєва активація, найкращі ціни та професійна підтримка.
+                    </p>
+                    
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="/pages/domains/register.php" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search"></i>
+                            Знайти домен
+                        </a>
+                        <a href="/pages/domains/transfer.php" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-arrow-left-right"></i>
+                            Перенести домен
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<script>
-// Конфігурація для доменної сторінки
-window.domainPageConfig = {
-    searchUrl: '?ajax=1',
-    csrfToken: '<?php echo generateCSRFToken(); ?>',
-    popularZones: <?php echo json_encode(array_column($popular_domains, 'zone')); ?>
-};
-
-// Швидкий пошук доменів
-document.addEventListener('DOMContentLoaded', function() {
-    const quickForm = document.getElementById('quickDomainSearch');
-    
-    if (quickForm) {
-        quickForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const domain = document.getElementById('quickDomainName').value;
-            const zone = document.getElementById('quickDomainZone').value;
-            
-            if (domain) {
-                // Перенаправляємо на сторінку реєстрації з параметрами
-                window.location.href = `/domains/register?domain=${encodeURIComponent(domain)}&zone=${encodeURIComponent(zone)}`;
-            }
-        });
-    }
-    
-    // Кнопки швидкої перевірки зон
-    document.querySelectorAll('.zone-check-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const zone = this.dataset.zone;
-            window.location.href = `/domains/register?zone=${encodeURIComponent(zone)}`;
-        });
-    });
-    
-    // Анімація останніх доменів
-    const recentItems = document.querySelectorAll('.recent-domain-item');
-    recentItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        }, index * 200);
-    });
-});
-</script>
-
-<?php include 'includes/footer.php'; ?>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>

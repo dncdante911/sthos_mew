@@ -1,8 +1,15 @@
 <?php
 // Защита от прямого доступа
-if (!defined('SECURE_ACCESS')) {
-    die('Direct access not permitted');
-}
+define('SECURE_ACCESS', true);
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// остальные переменные
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/includes/header.php';
 
 // Настройки страницы
 $page_title = t('domains_dns') . ' - ' . t('site_name');
@@ -210,8 +217,24 @@ function performDNSLookup($domain, $record_type) {
     return $results;
 }
 
-include 'includes/header.php';
 ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор хостингу - StormHosting UA</title>
+    <meta name="description" content="Розрахуйте вартість хостингу під ваші потреби. Віртуальний хостинг, VPS, виділені сервери. Миттєвий розрахунок ціни.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/home.css">
+    <!-- Calculator CSS -->
+    <link rel="stylesheet" href="/assets/css/pages/domains2.css">
+     
+     
+</head>
 
 <!-- DNS Hero -->
 <section class="dns-hero py-5">
@@ -554,18 +577,18 @@ include 'includes/header.php';
                     <div class="server-item">
                         <i class="bi bi-hdd-network"></i>
                         <span class="server-name">ns1.sthost.pro</span>
-                        <span class="server-ip">185.25.118.10</span>
+                        <span class="server-ip">195.22.131.11</span>
                     </div>
                     <div class="server-item">
                         <i class="bi bi-hdd-network"></i>
                         <span class="server-name">ns2.sthost.pro</span>
-                        <span class="server-ip">185.25.118.11</span>
+                        <span class="server-ip">46.232.232.38</span>
                     </div>
-                    <div class="server-item">
+                   <!--  <div class="server-item">
                         <i class="bi bi-hdd-network"></i>
                         <span class="server-name">ns3.sthost.pro</span>
                         <span class="server-ip">185.25.118.12</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             
@@ -621,4 +644,4 @@ function exportDNSRecords() {
 }
 </script>
 
-<?php include 'includes/footer.php'; ?>
+ <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>

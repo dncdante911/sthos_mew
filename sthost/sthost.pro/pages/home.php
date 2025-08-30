@@ -1,397 +1,598 @@
-<!DOCTYPE html>
-<html lang="<?php echo $current_lang; ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo escapeOutput($page_title); ?></title>
-    <meta name="description" content="<?php echo escapeOutput($meta_description); ?>">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS (если файл существует) -->
-    <?php if (file_exists('assets/css/main.css')): ?>
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <?php endif; ?>
-    
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --primary-dark: #0056b3;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 100px 0;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 24px;
-        }
-        
-        .domain-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            border: 2px solid #f8f9fa;
-            transition: all 0.3s ease;
-        }
-        
-        .domain-card:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-3px);
-        }
-        
-        .hosting-plan-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            border: 2px solid #f8f9fa;
-            transition: all 0.3s ease;
-            position: relative;
-            height: 100%;
-        }
-        
-        .hosting-plan-card.popular {
-            border-color: var(--primary-color);
-            transform: scale(1.05);
-        }
-        
-        .popular-badge {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary-color);
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .footer {
-            background: #343a40;
-            color: white;
-            padding: 50px 0 20px;
-        }
-        
-        .footer a {
-            color: #adb5bd;
-            text-decoration: none;
-        }
-        
-        .footer a:hover {
-            color: white;
-        }
-    </style>
-</head>
-<body>
+<?php
+/**
+ * StormHosting UA - Обновленная главная страница
+ * Файл: /pages/home.php
+ * 
+ * Главная страница с новостями, бегущей строкой и богатым контентом
+ */
 
-<!-- Header -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
-            Storm<span class="text-primary">Hosting</span> UA
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/"><?php echo t('nav_home'); ?></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/domains"><?php echo t('nav_domains'); ?></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/hosting"><?php echo t('nav_hosting'); ?></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/vds"><?php echo t('nav_vds'); ?></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/tools"><?php echo t('nav_tools'); ?></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contacts"><?php echo t('nav_contacts'); ?></a>
-                </li>
-            </ul>
-            
-            <!-- Language Switcher -->
-            <div class="dropdown">
-                <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-globe"></i> <?php echo strtoupper($current_lang); ?>
-                </button>
-                <ul class="dropdown-menu">
-                    <?php foreach (['ua', 'en', 'ru'] as $lang_code): ?>
-                        <?php if ($lang_code !== $current_lang): ?>
-                        <li>
-                            <form method="post" style="display: inline;">
-                                <input type="hidden" name="change_language" value="1">
-                                <input type="hidden" name="language" value="<?php echo $lang_code; ?>">
-                                <button type="submit" class="dropdown-item"><?php echo strtoupper($lang_code); ?></button>
-                            </form>
-                        </li>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </ul>
+// Защита от прямого доступа
+if (!defined('SECURE_ACCESS')) {
+    http_response_code(403);
+    die('Доступ запрещен');
+}
+
+// Функции-заглушки если не определены
+if (!function_exists('escapeOutput')) {
+    function escapeOutput($text) {
+        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('formatPrice')) {
+    function formatPrice($price, $currency = 'грн') {
+        return number_format($price, 0, '.', ' ') . ' ' . $currency;
+    }
+}
+
+if (!function_exists('t')) {
+    function t($key) {
+        $translations = [
+            'hero_title' => 'Професійний хостинг з підтримкою 24/7',
+            'hero_subtitle' => 'Швидкі SSD сервери, безкоштовний SSL, миттєва активація. Найкращий хостинг для вашого бізнесу в Україні!',
+            'stats_sites' => 'Активних сайтів',
+            'stats_uptime' => 'Час безвідмовної роботи',
+            'stats_support' => 'Підтримка 24/7',
+            'news_title' => 'Останні новини',
+            'popular_domains_title' => 'Популярні домени',
+            'popular_hosting_title' => 'Тарифні плани хостингу'
+        ];
+        return $translations[$key] ?? $key;
+    }
+}
+
+// Получение новостей для бегущей строки
+$news_ticker = [
+    'Нові тарифи хостингу з покращеними характеристиками!',
+    'Безкоштовні SSL сертифікати для всіх клієнтів',
+    'Підтримка PHP 8.2 та останніх технологій',
+    'Акція: -50% на перший місяць VPS серверів!',
+    'Новий дата-центр у Києві вже працює',
+];
+
+// Текущий язык
+$current_lang = $current_lang ?? 'ua';
+?>
+<link rel="stylesheet" href="/assets/css/pages/index.css">
+<!-- Бегущая строка новостей -->
+<div class="news-ticker">
+    <div class="news-ticker-wrap">
+        <div class="news-ticker-content">
+            <i class="bi bi-megaphone"></i>
+            <span class="ticker-label">Новини:</span>
+            <div class="ticker-items">
+                <?php foreach($news_ticker as $news_item): ?>
+                    <span class="ticker-item"><?php echo escapeOutput($news_item); ?></span>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
-</nav>
+</div>
 
 <!-- Hero Section -->
 <section class="hero-section">
+    <div class="hero-background">
+        <div class="hero-particles"></div>
+        <div class="floating-icons">
+            <i class="bi bi-server floating-icon" style="top: 20%; left: 10%;"></i>
+            <i class="bi bi-shield-check floating-icon" style="top: 60%; left: 15%;"></i>
+            <i class="bi bi-lightning floating-icon" style="top: 30%; right: 20%;"></i>
+            <i class="bi bi-globe floating-icon" style="top: 70%; right: 10%;"></i>
+        </div>
+    </div>
+    
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4"><?php echo t('hero_title'); ?></h1>
-                <p class="lead mb-4"><?php echo t('hero_subtitle'); ?></p>
-                
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="/hosting" class="btn btn-light btn-lg">
-                        <i class="bi bi-rocket-takeoff"></i>
-                        Обрати хостинг
-                    </a>
-                    <a href="/domains" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-globe"></i>
-                        Зареєструвати домен
-                    </a>
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="title-highlight">Storm</span>Hosting UA
+                        <br>
+                        <span class="subtitle-animated"><?php echo t('hero_title'); ?></span>
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        <?php echo t('hero_subtitle'); ?>
+                    </p>
+                    
+                    <!-- Статистика -->
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="15000">0</div>
+                            <div class="stat-label"><?php echo t('stats_sites'); ?></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="99.9">0</div>
+                            <div class="stat-label"><?php echo t('stats_uptime'); ?>%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-count="24">0</div>
+                            <div class="stat-label"><?php echo t('stats_support'); ?></div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons">
+                        <a href="/pages/hosting/shared.php" class="btn-hero-primary">
+                            <i class="bi bi-rocket-takeoff"></i>
+                            Обрати хостинг
+                        </a>
+                        <a href="/pages/domains/register.php" class="btn-hero-outline">
+                            <i class="bi bi-globe"></i>
+                            Зареєструвати домен
+                        </a>
+                        <a href="/pages/vds/virtual.php" class="btn-hero-secondary">
+                            <i class="bi bi-server"></i>
+                            VDS сервери
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <i class="bi bi-server" style="font-size: 200px; opacity: 0.3;"></i>
+            
+            <div class="col-lg-5">
+                <div class="hero-visual">
+                    <div class="server-rack">
+                        <div class="server-unit active">
+                            <div class="server-lights">
+                                <span class="light green pulse"></span>
+                                <span class="light green pulse" style="animation-delay: 0.5s;"></span>
+                                <span class="light green pulse" style="animation-delay: 1s;"></span>
+                            </div>
+                            <div class="server-label">Web Server</div>
+                        </div>
+                        <div class="server-unit active">
+                            <div class="server-lights">
+                                <span class="light blue pulse"></span>
+                                <span class="light blue pulse" style="animation-delay: 0.3s;"></span>
+                                <span class="light blue pulse" style="animation-delay: 0.8s;"></span>
+                            </div>
+                            <div class="server-label">Database</div>
+                        </div>
+                        <div class="server-unit active">
+                            <div class="server-lights">
+                                <span class="light orange pulse"></span>
+                                <span class="light orange pulse" style="animation-delay: 0.7s;"></span>
+                                <span class="light orange pulse" style="animation-delay: 1.2s;"></span>
+                            </div>
+                            <div class="server-label">Storage</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="py-5">
+<!-- Услуги -->
+<section class="services-section">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-12">
-                <h2 class="display-5 fw-bold">Чому обирають StormHosting UA?</h2>
-                <p class="lead text-muted">Ми надаємо найкращі послуги хостингу в Україні</p>
+        <div class="section-header text-center">
+            <h2 class="section-title">Наші послуги</h2>
+            <p class="section-subtitle">Повний спектр послуг для вашого онлайн бізнесу</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-hdd-stack"></i>
+                    </div>
+                    <h3 class="service-title">Веб хостинг</h3>
+                    <p class="service-description">Надійний хостинг для сайтів будь-якої складності з підтримкою PHP, MySQL та безкоштовним SSL</p>
+                    <div class="service-features">
+                        <div class="feature">✓ SSD накопичувачі</div>
+                        <div class="feature">✓ Безкоштовний SSL</div>
+                        <div class="feature">✓ Щоденні бекапи</div>
+                        <div class="feature">✓ cPanel панель</div>
+                    </div>
+                    <div class="service-price">
+                        від <span class="price">99 грн</span>/міс
+                    </div>
+                    <a href="/pages/hosting/shared.php" class="service-btn">Детальніше</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card featured">
+                    <div class="featured-badge">Популярно</div>
+                    <div class="service-icon">
+                        <i class="bi bi-cloud"></i>
+                    </div>
+                    <h3 class="service-title">VPS/VDS сервери</h3>
+                    <p class="service-description">Потужні віртуальні сервери з повним контролем та гарантованими ресурсами</p>
+                    <div class="service-features">
+                        <div class="feature">✓ NVMe SSD диски</div>
+                        <div class="feature">✓ Root доступ</div>
+                        <div class="feature">✓ Миттєва активація</div>
+                        <div class="feature">✓ Масштабування</div>
+                    </div>
+                    <div class="service-price">
+                        від <span class="price">299 грн</span>/міс
+                    </div>
+                    <a href="/pages/vds/virtual.php" class="service-btn">Детальніше</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-globe2"></i>
+                    </div>
+                    <h3 class="service-title">Домени</h3>
+                    <p class="service-description">Реєстрація та управління доменними іменами у всіх популярних зонах</p>
+                    <div class="service-features">
+                        <div class="feature">✓ Українські домени</div>
+                        <div class="feature">✓ Міжнародні зони</div>
+                        <div class="feature">✓ DNS управління</div>
+                        <div class="feature">✓ WHOIS захист</div>
+                    </div>
+                    <div class="service-price">
+                        від <span class="price">150 грн</span>/рік
+                    </div>
+                    <a href="/pages/domains/register.php" class="service-btn">Детальніше</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Популярные домены -->
+<section class="popular-domains-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title"><?php echo t('popular_domains_title'); ?></h2>
+            <p class="section-subtitle">Найпопулярніші доменні зони за вигідними цінами</p>
+        </div>
+        
+        <div class="domains-grid">
+            <?php if (isset($popular_domains) && is_array($popular_domains)): ?>
+                <?php foreach($popular_domains as $domain): ?>
+                    <div class="domain-card">
+                        <div class="domain-zone"><?php echo escapeOutput($domain['zone']); ?></div>
+                        <div class="domain-price"><?php echo formatPrice($domain['price_registration']); ?>/рік</div>
+                        <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Статические данные если БД недоступна -->
+                <div class="domain-card">
+                    <div class="domain-zone">.com.ua</div>
+                    <div class="domain-price">150 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+                <div class="domain-card">
+                    <div class="domain-zone">.ua</div>
+                    <div class="domain-price">200 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+                <div class="domain-card">
+                    <div class="domain-zone">.info</div>
+                    <div class="domain-price">300 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+                <div class="domain-card">
+                    <div class="domain-zone">.com</div>
+                    <div class="domain-price">350 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+                <div class="domain-card">
+                    <div class="domain-zone">.org</div>
+                    <div class="domain-price">400 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+                <div class="domain-card">
+                    <div class="domain-zone">.net</div>
+                    <div class="domain-price">450 грн/рік</div>
+                    <a href="/pages/domains/register.php" class="domain-btn">Зареєструвати</a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Тарифы хостинга -->
+<section class="hosting-plans-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title"><?php echo t('popular_hosting_title'); ?></h2>
+            <p class="section-subtitle">Оберіть оптимальний план для вашого проекту</p>
+        </div>
+        
+        <div class="row g-4">
+            <?php if (isset($popular_hosting) && is_array($popular_hosting)): ?>
+                <?php foreach($popular_hosting as $plan): ?>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="hosting-plan <?php echo $plan['is_popular'] ? 'popular' : ''; ?>">
+                            <?php if ($plan['is_popular']): ?>
+                                <div class="plan-badge">Популярний</div>
+                            <?php endif; ?>
+                            
+                            <div class="plan-header">
+                                <h3 class="plan-name"><?php echo escapeOutput($plan['name_ua']); ?></h3>
+                                <div class="plan-price">
+                                    <span class="price"><?php echo formatPrice($plan['price_monthly']); ?></span>
+                                    <span class="period">/місяць</span>
+                                </div>
+                            </div>
+                            
+                            <div class="plan-features">
+                                <div class="feature">
+                                    <i class="bi bi-hdd"></i>
+                                    <span><?php echo number_format($plan['disk_space']/1024, 0); ?> ГБ SSD</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                    <span><?php echo $plan['bandwidth']; ?> ГБ трафіку</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="bi bi-database"></i>
+                                    <span><?php echo $plan['databases']; ?> БД MySQL</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="bi bi-envelope"></i>
+                                    <span><?php echo $plan['email_accounts']; ?> email скриньок</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span>Безкоштовний SSL</span>
+                                </div>
+                            </div>
+                            
+                            <a href="/pages/hosting/shared.php" class="plan-btn <?php echo $plan['is_popular'] ? 'btn-primary' : 'btn-outline'; ?>">
+                                Обрати план
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Новости -->
+<section class="news-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h2 class="section-title"><?php echo t('news_title'); ?></h2>
+                    <p class="section-subtitle">Будьте в курсі всіх оновлень та новин StormHosting UA</p>
+                </div>
+                <div class="col-auto">
+                    <a href="/pages/news/" class="btn btn-outline-primary">Всі новини</a>
+                </div>
             </div>
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-speedometer2"></i>
+            <?php if (isset($latest_news) && is_array($latest_news)): ?>
+                <?php foreach(array_slice($latest_news, 0, 4) as $index => $news): ?>
+                    <div class="col-lg-6 col-md-6">
+                        <article class="news-card <?php echo $index === 0 ? 'featured' : ''; ?>">
+                            <?php if ($news['image']): ?>
+                                <div class="news-image">
+                                    <img src="<?php echo escapeOutput($news['image']); ?>" alt="<?php echo escapeOutput($news['title']); ?>">
+                                </div>
+                            <?php else: ?>
+                                <div class="news-image-placeholder">
+                                    <i class="bi bi-newspaper"></i>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="news-content">
+                                <div class="news-meta">
+                                    <time datetime="<?php echo date('Y-m-d', strtotime($news['created_at'])); ?>">
+                                        <?php echo formatDate($news['created_at'], 'd.m.Y'); ?>
+                                    </time>
+                                </div>
+                                
+                                <h3 class="news-title">
+                                    <a href="/pages/news/<?php echo $news['id']; ?>"><?php echo escapeOutput($news['title']); ?></a>
+                                </h3>
+                                
+                                <p class="news-excerpt">
+                                    <?php echo escapeOutput(mb_substr(strip_tags($news['content']), 0, 120)); ?>...
+                                </p>
+                                
+                                <a href="/pages/news/<?php echo $news['id']; ?>" class="news-link">
+                                    Читати далі <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
                     </div>
-                    <h4>99.9% Аптайм</h4>
-                    <p>Гарантована стабільність роботи ваших сайтів</p>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Преимущества -->
+<section class="advantages-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Чому обирають StormHosting UA?</h2>
+            <p class="section-subtitle">Переваги, які роблять нас кращими</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h3 class="advantage-title">Швидкість</h3>
+                    <p class="advantage-description">NVMe SSD накопичувачі та оптимізовані сервери забезпечують максимальну швидкість</p>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-headset"></i>
-                    </div>
-                    <h4>Підтримка 24/7</h4>
-                    <p>Швидка технічна підтримка в будь-який час</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
                         <i class="bi bi-shield-check"></i>
                     </div>
-                    <h4>Безкоштовний SSL</h4>
-                    <p>Let's Encrypt сертифікати для всіх сайтів</p>
+                    <h3 class="advantage-title">Безпека</h3>
+                    <p class="advantage-description">Комплексна система захисту, SSL сертифікати та регулярні бекапи</p>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-cloud-upload"></i>
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="bi bi-headset"></i>
                     </div>
-                    <h4>Автобекапи</h4>
-                    <p>Щоденне резервне копіювання даних</p>
+                    <h3 class="advantage-title">Підтримка 24/7</h3>
+                    <p class="advantage-description">Наша команда експертів готова допомогти вам у будь-який час доби</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h3 class="advantage-title">Масштабування</h3>
+                    <p class="advantage-description">Легко збільшуйте ресурси в міру зростання вашого проекту</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Popular Domains -->
-<section class="py-5 bg-light">
+<!-- Newsletter подписка -->
+<section class="newsletter-section">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-12">
-                <h2 class="display-6 fw-bold">Популярні домени</h2>
-                <p class="lead text-muted">Зареєструйте домен за найкращою ціною</p>
-            </div>
-        </div>
-        
-        <div class="row g-3 justify-content-center">
-            <?php foreach (array_slice($popular_domains, 0, 5) as $domain): ?>
-            <div class="col-lg-2 col-md-4 col-6">
-                <div class="domain-card">
-                    <div class="fw-bold fs-4 text-primary"><?php echo escapeOutput($domain['zone']); ?></div>
-                    <div class="text-muted small">від</div>
-                    <div class="fw-bold"><?php echo formatPrice($domain['price_registration']); ?></div>
-                    <div class="text-muted small">грн/рік</div>
-                    <a href="/domains" class="btn btn-primary btn-sm mt-2 w-100">Зареєструвати</a>
+        <div class="newsletter-card">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="newsletter-title">Підпишіться на розсилку</h3>
+                    <p class="newsletter-description">Отримуйте останні новини, акції та корисні поради від StormHosting UA</p>
+                </div>
+                <div class="col-lg-4">
+                    <form class="newsletter-form" id="newsletterForm">
+                        <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Ваш email" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-envelope"></i>
+                                Підписатися
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<!-- Hosting Plans -->
-<section class="py-5">
+<!-- CTA Section -->
+<section class="cta-section">
     <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-12">
-                <h2 class="display-6 fw-bold">Тарифні плани хостингу</h2>
-                <p class="lead text-muted">Оберіть ідеальний план для вашого проекту</p>
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Готові почати?</h2>
+            <p class="cta-description">Приєднуйтесь до тисяч задоволених клієнтів StormHosting UA вже сьогодні</p>
+            <div class="cta-buttons">
+                <a href="/pages/hosting/shared.php" class="btn btn-primary btn-lg">
+                    <i class="bi bi-rocket-takeoff"></i>
+                    Почати зараз
+                </a>
+                <a href="/pages/info/contacts.php" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-chat-dots"></i>
+                    Зв'язатися з нами
+                </a>
             </div>
-        </div>
-        
-        <div class="row g-4 justify-content-center">
-            <?php foreach ($popular_hosting as $plan): ?>
-            <div class="col-lg-4 col-md-6">
-                <div class="hosting-plan-card <?php echo $plan['is_popular'] ? 'popular' : ''; ?>">
-                    <?php if ($plan['is_popular']): ?>
-                    <div class="popular-badge">Популярний</div>
-                    <?php endif; ?>
-                    
-                    <div class="text-center mb-4">
-                        <h3 class="fw-bold"><?php echo escapeOutput($plan['name_' . $current_lang] ?? $plan['name_ua']); ?></h3>
-                        <div class="display-6 fw-bold text-primary"><?php echo formatPrice($plan['price_monthly']); ?></div>
-                        <div class="text-muted">грн/міс</div>
-                    </div>
-                    
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> <?php echo $plan['disk_space'] / 1024; ?> ГБ дискового простору</li>
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> <?php echo $plan['bandwidth']; ?> ГБ трафіку</li>
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> <?php echo $plan['databases']; ?> бази даних</li>
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> <?php echo $plan['email_accounts']; ?> поштових скриньок</li>
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> Безкоштовний SSL</li>
-                        <li class="mb-2"><i class="bi bi-check text-success"></i> Щоденні бекапи</li>
-                    </ul>
-                    
-                    <div class="text-center mt-4">
-                        <a href="/hosting" class="btn btn-primary w-100">Замовити зараз</a>
-                    </div>
-                </div>
-            </div>
-            <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 mb-4">
-                <h5 class="fw-bold mb-3">StormHosting UA</h5>
-                <p>Надійний хостинг провайдер для вашого онлайн бізнесу. Ми забезпечуємо стабільну роботу ваших сайтів 24/7.</p>
-                <div class="d-flex gap-3">
-                    <a href="#" class="text-light"><i class="bi bi-telegram fs-4"></i></a>
-                    <a href="#" class="text-light"><i class="bi bi-facebook fs-4"></i></a>
-                    <a href="#" class="text-light"><i class="bi bi-twitter fs-4"></i></a>
-                </div>
-            </div>
-            
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h6 class="fw-bold mb-3">Послуги</h6>
-                <ul class="list-unstyled">
-                    <li><a href="/hosting">Хостинг</a></li>
-                    <li><a href="/vds">VDS/VPS</a></li>
-                    <li><a href="/domains">Домени</a></li>
-                    <li><a href="#">SSL сертифікати</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h6 class="fw-bold mb-3">Підтримка</h6>
-                <ul class="list-unstyled">
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="/contacts">Контакти</a></li>
-                    <li><a href="#">Документація</a></li>
-                    <li><a href="#">Статус серверів</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-4 mb-4">
-                <h6 class="fw-bold mb-3">Контакти</h6>
-                <div class="d-flex mb-2">
-                    <i class="bi bi-geo-alt me-2"></i>
-                    <span>Україна, Дніпро</span>
-                </div>
-                <div class="d-flex mb-2">
-                    <i class="bi bi-envelope me-2"></i>
-                    <span>info@sthost.pro</span>
-                </div>
-                <div class="d-flex mb-2">
-                    <i class="bi bi-telephone me-2"></i>
-                    <span>+380 XX XXX XX XX</span>
-                </div>
-            </div>
-        </div>
-        
-        <hr class="my-4">
-        
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <p class="mb-0">&copy; <?php echo date('Y'); ?> StormHosting UA. Всі права захищені.</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <small class="text-muted">Розроблено з ❤️ в Україні</small>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
+<!-- JavaScript для анимаций и интерактивности -->
 <script>
-// Простые анимации
 document.addEventListener('DOMContentLoaded', function() {
+    // Анимация счетчиков
+    const animateCounters = () => {
+        const counters = document.querySelectorAll('.stat-number[data-count]');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-count'));
+            const increment = target / 100;
+            let current = 0;
+            
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.textContent = Math.ceil(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target;
+                }
+            };
+            
+            updateCounter();
+        });
+    };
+    
+    // Запуск анимации счетчиков при скролле
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                observer.disconnect();
+            }
+        });
+    });
+    
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+        observer.observe(heroStats);
+    }
+    
+    // Анимация бегущей строки
+    const ticker = document.querySelector('.ticker-items');
+    if (ticker) {
+        let position = 0;
+        const speed = 1;
+        
+        const animateTicker = () => {
+            position -= speed;
+            if (position <= -ticker.scrollWidth) {
+                position = 0;
+            }
+            ticker.style.transform = `translateX(${position}px)`;
+            requestAnimationFrame(animateTicker);
+        };
+        
+        animateTicker();
+    }
+    
+    // Обработка формы подписки
+    const newsletterForm = document.getElementById('newsletterForm');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            
+            // Здесь будет AJAX запрос на сервер
+            fetch('/api/newsletter/subscribe.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Дякуємо за підписку!');
+                    this.reset();
+                } else {
+                    alert('Помилка при підписці. Спробуйте ще раз.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Помилка при підписці. Спробуйте ще раз.');
+            });
+        });
+    }
+    
     // Плавная прокрутка для якорных ссылок
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -399,36 +600,73 @@ document.addEventListener('DOMContentLoaded', function() {
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
                 target.scrollIntoView({
-                    behavior: 'smooth'
+                    behavior: 'smooth',
+                    block: 'start'
                 });
             }
         });
     });
-    
-    // Анимация появления карточек при скролле
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-    
-    // Применяем анимацию к карточкам
-    document.querySelectorAll('.feature-card, .domain-card, .hosting-plan-card').forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(card);
-    });
 });
 </script>
 
-</body>
-</html>
+
+<script>
+function orderService(serviceType, planId, planName, price) {
+    // Показать загрузку
+    showLoading('Створення замовлення...');
+    
+    // Отправить на сервер
+    fetch('/api/create_order.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCsrfToken()
+        },
+        body: JSON.stringify({
+            service_type: serviceType,
+            plan_id: planId,
+            plan_name: planName,
+            price: price
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoading();
+        if (data.success) {
+            // Перенаправление на FOSSBilling
+            window.location.href = data.payment_url;
+        } else {
+            showError(data.message);
+        }
+    })
+    .catch(error => {
+        hideLoading();
+        showError('Помилка створення замовлення');
+    });
+}
+
+// Обновить кнопки доменов
+document.querySelectorAll('.domain-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const card = this.closest('.domain-card');
+        const zone = card.querySelector('.domain-zone').textContent;
+        const price = parseFloat(card.querySelector('.domain-price').textContent);
+        
+        orderService('domain_registration', 0, 'Домен ' + zone, price);
+    });
+});
+
+// Обновить кнопки хостинга
+document.querySelectorAll('.plan-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const planId = this.dataset.planId;
+        const planName = this.dataset.planName;
+        const price = this.dataset.price;
+        
+        orderService('shared_hosting', planId, planName, price);
+    });
+});
+</script>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>

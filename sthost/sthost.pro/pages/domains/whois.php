@@ -1,8 +1,15 @@
 <?php
 // Защита от прямого доступа
-if (!defined('SECURE_ACCESS')) {
-    die('Direct access not permitted');
-}
+define('SECURE_ACCESS', true);
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// остальные переменные
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/includes/header.php';
 
 // Настройки страницы
 $page_title = t('domains_whois') . ' - ' . t('site_name');
@@ -133,8 +140,23 @@ function performWhoisLookup($domain, $whois_server) {
     ];
 }
 
-include 'includes/header.php';
 ?>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор хостингу - StormHosting UA</title>
+    <meta name="description" content="Розрахуйте вартість хостингу під ваші потреби. Віртуальний хостинг, VPS, виділені сервери. Миттєвий розрахунок ціни.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <!-- Calculator CSS -->
+     <link rel="stylesheet" href="/assets/css/pages/domains2.css">
+</head>
 
 <!-- WHOIS Hero -->
 <section class="whois-hero py-5">
@@ -366,4 +388,4 @@ window.whoisConfig = {
 };
 </script>
 
-<?php include 'includes/footer.php'; ?>
+ <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>

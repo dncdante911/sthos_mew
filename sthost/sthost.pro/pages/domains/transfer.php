@@ -1,8 +1,15 @@
 <?php
 // Защита от прямого доступа
-if (!defined('SECURE_ACCESS')) {
-    die('Direct access not permitted');
-}
+define('SECURE_ACCESS', true);
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// остальные переменные
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/includes/header.php';
 
 // Настройки страницы
 $page_title = 'Перенесення домену - StormHosting UA';
@@ -88,8 +95,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-include 'includes/header.php';
 ?>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор хостингу - StormHosting UA</title>
+    <meta name="description" content="Розрахуйте вартість хостингу під ваші потреби. Віртуальний хостинг, VPS, виділені сервери. Миттєвий розрахунок ціни.">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Calculator CSS -->
+    <link rel="stylesheet" href="/assets/css/pages/domains-transfer.css">
+</head>
 
 <!-- Transfer Hero -->
 <section class="transfer-hero py-5">
@@ -667,5 +687,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script src="/assets/js/domains-transfer.js"></script>
 
-<?php include 'includes/footer.php'; ?>
+ <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>
