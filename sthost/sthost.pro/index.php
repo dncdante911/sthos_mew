@@ -90,7 +90,8 @@ $request_uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($request_uri, PHP_URL_PATH);
 $path = trim($path, '/');
 $segments = explode('/', $path);
-$page = $segments[0] ?: 'home';
+//$page = $segments[0] ?: 'home';
+$page = $_GET['page'] ?? 'home';
 
 // Защита от некорректных символов в URL
 if (!preg_match('/^[a-zA-Z0-9\-_\/]*$/', $path)) {
@@ -232,26 +233,33 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
 switch($page) {
     case 'test-db':
         // Страница тестирования БД
-        $db_test = testDatabaseConnection();
-        echo "<h1>Database Connection Test</h1>";
-        if ($db_test['success']) {
-            echo "<p style='color: green;'>✅ Database connection successful!</p>";
+        if (function_exists('testDatabaseConnection')) {
+            $db_test = testDatabaseConnection();
+            echo "<h1>Database Connection Test</h1>";
+            if ($db_test['success']) {
+                echo "<p style='color: green;'>✅ Database connection successful!</p>";
+            } else {
+                echo "<p style='color: red;'>❌ Database connection failed:</p>";
+                echo "<pre>" . htmlspecialchars($db_test['error']) . "</pre>";
+                echo "<h3>Possible solutions:</h3>";
+                echo "<ul>";
+                echo "<li>Check if database user exists</li>";
+                echo "<li>Verify password (check for special characters)</li>";
+                echo "<li>Ensure database permissions are correct</li>";
+                echo "<li>Run the SQL commands from fix_database_user.sql</li>";
+                echo "</ul>";
+            }
         } else {
-            echo "<p style='color: red;'>❌ Database connection failed:</p>";
-            echo "<pre>" . htmlspecialchars($db_test['error']) . "</pre>";
-            echo "<h3>Possible solutions:</h3>";
-            echo "<ul>";
-            echo "<li>Check if database user exists</li>";
-            echo "<li>Verify password (check for special characters)</li>";
-            echo "<li>Ensure database permissions are correct</li>";
-            echo "<li>Run the SQL commands from fix_database_user.sql</li>";
-            echo "</ul>";
+            echo "<p>Database test function not available</p>";
         }
         exit;
         
     case 'home':
     case '':
     default:
+        // Подключаем header
+        include 'includes/header.php';
+        
         // Показываем главную страницу
         include 'pages/home.php';
         break;
