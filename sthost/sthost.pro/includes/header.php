@@ -3,306 +3,884 @@
 if (!defined('SECURE_ACCESS')) {
     die('Direct access not permitted');
 }
+
+// Проверяем авторизацию пользователя
+$user_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+$user_name = $_SESSION['user_name'] ?? '';
+$user_email = $_SESSION['user_email'] ?? '';
+
+// Определяем текущую страницу для активных состояний
+$current_page = $_SERVER['REQUEST_URI'];
+$page_parts = explode('/', trim($current_page, '/'));
+$page = $page_parts[1] ?? '';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $current_lang; ?>">
+<html lang="<?php echo $current_lang ?? 'uk'; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) : 'StormHosting UA'; ?></title>
+    <meta name="description" content="<?php echo isset($meta_description) ? htmlspecialchars($meta_description) : 'Надійний хостинг для вашого бізнесу'; ?>">
     
-    <!-- SEO мета-теги -->
-    <title><?php echo escapeOutput($page_title); ?></title>
-    <meta name="description" content="<?php echo escapeOutput($meta_description); ?>">
-    <meta name="keywords" content="<?php echo escapeOutput($meta_keywords); ?>">
-    <meta name="author" content="StormHosting UA">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="<?php echo escapeOutput($canonical_url); ?>">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="<?php echo escapeOutput($page_title); ?>">
-    <meta property="og:description" content="<?php echo escapeOutput($meta_description); ?>">
-    <meta property="og:image" content="<?php echo escapeOutput($og_image); ?>">
-    <meta property="og:url" content="<?php echo escapeOutput($canonical_url); ?>">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="StormHosting UA">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo escapeOutput($page_title); ?>">
-    <meta name="twitter:description" content="<?php echo escapeOutput($meta_description); ?>">
-    <meta name="twitter:image" content="<?php echo escapeOutput($og_image); ?>">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
-    
-    <!-- Preload важных ресурсов -->
-    <link rel="preload" href="/assets/css/main.css" as="style">
-    <link rel="preload" href="/assets/js/main.js" as="script">
-    <link rel="preload" href="/assets/fonts/roboto-regular.woff2" as="font" type="font/woff2" crossorigin>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="/assets/css/main.css?v=<?php echo filemtime('assets/css/main.css'); ?>">
-    <link rel="stylesheet" href="/assets/css/animations.css?v=<?php echo filemtime('assets/css/animations.css'); ?>">
-    <link rel="stylesheet" href="/assets/css/responsive.css?v=<?php echo filemtime('assets/css/responsive.css'); ?>">
-    
-    <?php if (isset($page_css) && !empty($page_css)): ?>
-        <link rel="stylesheet" href="/assets/css/pages/<?php echo $page_css; ?>.css?v=<?php echo filemtime("assets/css/pages/{$page_css}.css"); ?>">
-    <?php endif; ?>
-    
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
-    
-    <!-- reCAPTCHA -->
-    <?php if (defined('RECAPTCHA_SITE_KEY')): ?>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <?php endif; ?>
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "StormHosting UA",
-        "url": "<?php echo SITE_URL; ?>",
-        "logo": "<?php echo SITE_URL; ?>/assets/images/logo.png",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+380-XX-XXX-XX-XX",
-            "contactType": "customer service",
-            "availableLanguage": ["Ukrainian", "English", "Russian"]
-        },
-        "sameAs": [
-            "https://t.me/stormhosting_ua"
-        ]
-    }
-    </script>
-    
-    <!-- CSRF токен для AJAX -->
-    <meta name="csrf-token" content="<?php echo generateCSRFToken(); ?>">
-    
-    <!-- Дополнительные мета-теги -->
-    <meta name="theme-color" content="#007bff">
-    <meta name="msapplication-TileColor" content="#007bff">
-    <meta name="format-detection" content="telephone=no">
+    <!-- Modal Auth CSS -->
+    <link rel="stylesheet" href="/assets/css/pages/modal-auth.css">
+   
+
+<style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #6366f1;
+            --text-color: #1f2937;
+            --bg-color: #ffffff;
+            --border-color: #e5e7eb;
+            --menu-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Header Styles */
+        .main-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .navbar {
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            color: #f0f8ff !important;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 0.75rem;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Navigation Links */
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-auth-header {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-login {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: transparent;
+        }
+
+        .btn-login:hover {
+            color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-register {
+            color: #667eea;
+            background: white;
+            border-color: white;
+        }
+
+        .btn-register:hover {
+            color: white;
+            background: transparent;
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-logout {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: transparent;
+        }
+
+        .btn-logout:hover {
+            color: #dc3545;
+            background: white;
+            border-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* User Info */
+        .user-info {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+
+        .menu-icon span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+        }
+
+        .menu-icon span:nth-child(1) { transform: translateY(-6px); }
+        .menu-icon span:nth-child(3) { transform: translateY(6px); }
+
+        /* Slide Menu */
+        .slide-menu {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            height: 100vh;
+            background: var(--menu-bg);
+            backdrop-filter: blur(20px);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+            transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+        }
+
+        .slide-menu.open {
+            right: 0;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .menu-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .menu-content {
+            padding: 1.5rem;
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-section-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-section-title:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+        }
+
+        .menu-items {
+            display: none;
+            padding-left: 1rem;
+        }
+
+        .menu-items.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .menu-item-content {
+            flex: 1;
+        }
+
+        .menu-item-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-item-desc {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .quick-action-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide-menu {
+                width: 100%;
+                right: -100%;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .btn-auth-header {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                align-items: flex-end;
+                margin-right: 0.5rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .menu-toggle {
+                margin-left: 1rem;
+            }
+        }
+</style>
+ 
 </head>
-<body class="<?php echo $current_lang; ?> page-<?php echo $page; ?> <?php echo isset($body_class) ? $body_class : ''; ?>">
-    
-    <!-- Preloader -->
-    <div id="preloader" class="preloader">
-        <div class="preloader-spinner">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden"><?php echo t('loading'); ?></span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Skip to content -->
-    <a href="#main-content" class="skip-to-content"><?php echo t('skip_to_content'); ?></a>
-    
-    <!-- Header -->
-    <header class="header" id="header">
-        <!-- Top Bar -->
-        <div class="top-bar">
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg">
             <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="contact-info">
-                            <span class="contact-item">
-                                <i class="bi bi-telephone"></i>
-                                <a href="tel:+380XXXXXXXXX">+380 XX XXX XX XX</a>
-                            </span>
-                            <span class="contact-item">
-                                <i class="bi bi-envelope"></i>
-                                <a href="mailto:<?php echo SITE_EMAIL; ?>"><?php echo SITE_EMAIL; ?></a>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="top-bar-right">
-                            <!-- Переключатель языка -->
-                            <div class="language-switcher dropdown">
-                                <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-globe"></i>
-                                    <?php echo t('language_' . $current_lang); ?>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <?php foreach ($available_languages as $lang_code): ?>
-                                        <?php if ($lang_code !== $current_lang): ?>
-                                        <li>
-                                            <form method="post" class="language-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-                                                <input type="hidden" name="change_language" value="1">
-                                                <input type="hidden" name="language" value="<?php echo $lang_code; ?>">
-                                                <button type="submit" class="dropdown-item">
-                                                    <?php echo t('language_' . $lang_code); ?>
-                                                </button>
-                                            </form>
-                                        </li>
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                            
-                            <!-- Аккаунт пользователя -->
-                            <?php if (isLoggedIn()): ?>
-                                <?php $user = getCurrentUser(); ?>
-                                <div class="user-menu dropdown">
-                                    <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="bi bi-person"></i>
-                                        <?php echo escapeOutput($user['full_name']); ?>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="/client"><?php echo t('nav_client_area'); ?></a></li>
-                                        <li><a class="dropdown-item" href="/client/settings"><?php echo t('settings'); ?></a></li>
-                                        <?php if (isAdmin()): ?>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="/admin"><?php echo t('admin_panel'); ?></a></li>
-                                        <?php endif; ?>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="/auth/logout"><?php echo t('nav_logout'); ?></a></li>
-                                    </ul>
-                                </div>
-                            <?php else: ?>
-                                <div class="auth-links">
-                                    <a href="/auth/login" class="btn btn-sm btn-outline-primary"><?php echo t('nav_login'); ?></a>
-                                    <a href="/auth/register" class="btn btn-sm btn-primary"><?php echo t('nav_register'); ?></a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Main Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-            <div class="container">
-                <!-- Logo -->
+                <!-- Brand Logo -->
                 <a class="navbar-brand" href="/">
-                    <img src="/assets/images/logos/logo.svg" alt="StormHosting UA" height="40" class="logo">
-                    <span class="brand-text">Storm<span class="text-primary">Hosting</span> UA</span>
+                    <img src="/assets/images/Black.png" class="brand-logo">
+                    <span>StormHosting UA</span>
                 </a>
-                
-                <!-- Mobile menu button -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <!-- Navigation Menu -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo ($page === 'home' || $page === '') ? 'active' : ''; ?>" href="/">
-                                <?php echo t('nav_home'); ?>
-                            </a>
-                        </li>
-                        
-                        <!-- Домены -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle <?php echo ($page === 'domains') ? 'active' : ''; ?>" 
-                               href="/domains" data-bs-toggle="dropdown">
-                                <?php echo t('nav_domains'); ?>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/domains/register"><?php echo t('domains_register'); ?></a></li>
-                                <li><a class="dropdown-item" href="/domains/whois"><?php echo t('domains_whois'); ?></a></li>
-                                <li><a class="dropdown-item" href="/domains/dns"><?php echo t('domains_dns'); ?></a></li>
-                                <li><a class="dropdown-item" href="/domains/transfer"><?php echo t('domains_transfer'); ?></a></li>
-                            </ul>
-                        </li>
-                        
-                        <!-- Хостинг -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle <?php echo ($page === 'hosting') ? 'active' : ''; ?>" 
-                               href="/hosting" data-bs-toggle="dropdown">
-                                <?php echo t('nav_hosting'); ?>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/hosting/shared"><?php echo t('hosting_shared'); ?></a></li>
-                                <li><a class="dropdown-item" href="/hosting/cloud"><?php echo t('hosting_cloud'); ?></a></li>
-                                <li><a class="dropdown-item" href="/hosting/reseller"><?php echo t('hosting_reseller'); ?></a></li>
-                            </ul>
-                        </li>
-                        
-                        <!-- VDS/VPS -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle <?php echo ($page === 'vds') ? 'active' : ''; ?>" 
-                               href="/vds" data-bs-toggle="dropdown">
-                                <?php echo t('nav_vds'); ?>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/vds/virtual"><?php echo t('vds_virtual'); ?></a></li>
-                                <li><a class="dropdown-item" href="/vds/dedicated"><?php echo t('vds_dedicated'); ?></a></li>
-                                <li><a class="dropdown-item" href="/vds/calculator"><?php echo t('vds_calculator'); ?></a></li>
-                            </ul>
-                        </li>
-                        
-                        <!-- Инструменты -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle <?php echo ($page === 'tools') ? 'active' : ''; ?>" 
-                               href="/tools" data-bs-toggle="dropdown">
-                                <?php echo t('nav_tools'); ?>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/tools/site-check"><?php echo t('tools_site_check'); ?></a></li>
-                                <li><a class="dropdown-item" href="/tools/http-headers"><?php echo t('tools_http_headers'); ?></a></li>
-                                <li><a class="dropdown-item" href="/tools/ip-check"><?php echo t('tools_ip_check'); ?></a></li>
-                                <li><a class="dropdown-item" href="/tools/site-info"><?php echo t('tools_site_info'); ?></a></li>
-                            </ul>
-                        </li>
-                        
-                        <!-- Информация -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle <?php echo ($page === 'info') ? 'active' : ''; ?>" 
-                               href="/info" data-bs-toggle="dropdown">
-                                <?php echo t('nav_info'); ?>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/info/about"><?php echo t('info_about'); ?></a></li>
-                                <li><a class="dropdown-item" href="/info/quality"><?php echo t('info_quality'); ?></a></li>
-                                <li><a class="dropdown-item" href="/info/rules"><?php echo t('info_rules'); ?></a></li>
-                                <li><a class="dropdown-item" href="/info/legal"><?php echo t('info_legal'); ?></a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/info/faq"><?php echo t('info_faq'); ?></a></li>
-                                <li><a class="dropdown-item" href="/info/ssl"><?php echo t('info_ssl'); ?></a></li>
-                                <li><a class="dropdown-item" href="/info/complaints"><?php echo t('info_complaints'); ?></a></li>
-                            </ul>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo ($page === 'contacts') ? 'active' : ''; ?>" href="/contacts">
-                                <?php echo t('nav_contacts'); ?>
-                            </a>
-                        </li>
-                    </ul>
-                    
-                    <!-- Поиск -->
-                    <form class="d-flex search-form me-3" role="search">
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" type="search" placeholder="<?php echo t('search_placeholder'); ?>" aria-label="Search">
-                            <button class="btn btn-outline-secondary btn-sm" type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <!-- CTA кнопка -->
-                    <div class="header-cta">
-                        <a href="/hosting" class="btn btn-primary btn-sm">
-                            <?php echo t('hero_cta_hosting'); ?>
+
+                <!-- Main Navigation (Desktop) -->
+                <ul class="navbar-nav mx-auto d-none d-lg-flex">
+                    <li class="nav-item">
+                        <a class="nav-link<?php echo ($page === '' || $page === 'index') ? ' active' : ''; ?>" href="/">
+                            Головна
                         </a>
-                    </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pages/contacts.php">
+                            Контакти
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Auth Buttons & Menu Toggle -->
+                <div class="d-flex align-items-center">
+                    <?php if ($user_logged_in): ?>
+                        <!-- Информация о пользователе -->
+                        <div class="user-info d-none d-sm-flex">
+                            <div class="user-avatar">
+                                <?php echo strtoupper(substr($user_name, 0, 1)); ?>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.85rem;">
+                                    <?php echo htmlspecialchars($user_name); ?>
+                                </div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">
+                                    <?php echo htmlspecialchars($user_email); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопка выхода -->
+                        <div class="auth-buttons me-3">
+                            <a href="/auth/logout.php" class="btn-auth-header btn-logout" onclick="return confirm('Ви впевнені, що хочете вийти?')">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Вийти
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <!-- Кнопки авторизации для неавторизованных -->
+                        <div class="auth-buttons me-3">
+                            <a href="#" class="btn-auth-header btn-login" data-open-login>
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Вхід
+                            </a>
+                            <a href="#" class="btn-auth-header btn-register" data-open-register>
+                                <i class="bi bi-person-plus"></i>
+                                Реєстрація
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Menu Toggle Button -->
+                    <button type="button" class="menu-toggle" id="menuToggle">
+                        <div class="menu-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="d-none d-sm-inline">Меню</span>
+                    </button>
                 </div>
             </div>
         </nav>
     </header>
+
+    <!-- Slide Menu -->
+    <div class="slide-menu" id="slideMenu">
+        <div class="menu-header">
+            <h3>Навігація</h3>
+            <?php if ($user_logged_in): ?>
+                <div class="d-sm-none mt-2" style="font-size: 0.9rem; opacity: 0.9;">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <?php echo htmlspecialchars($user_name); ?>
+                </div>
+            <?php endif; ?>
+            <button type="button" class="menu-close" id="menuClose">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="menu-content">
+            <?php if ($user_logged_in): ?>
+                <!-- Панель пользователя в меню -->
+                <div class="menu-section">
+                    <div class="menu-section-title">
+                        <i class="bi bi-person-circle"></i>
+                        <span>Мій кабінет</span>
+                    </div>
+                    <div class="menu-items show">
+                        <a href="/client/dashboard.php" class="menu-item">
+                            <i class="bi bi-speedometer2"></i>
+                            <div class="menu-item-content">
+                                <div class="menu-item-title">Панель управління</div>
+                                <div class="menu-item-desc">Головна сторінка кабінету</div>
+                            </div>
+                        </a>
+                        <a href="/client/profile.php" class="menu-item">
+                            <i class="bi bi-person-gear"></i>
+                            <div class="menu-item-content">
+                                <div class="menu-item-title">Налаштування профілю</div>
+                                <div class="menu-item-desc">Редагування даних</div>
+                            </div>
+                        </a>
+                        <a href="/auth/logout.php" class="menu-item" onclick="return confirm('Ви впевнені, що хочете вийти?')">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <div class="menu-item-content">
+                                <div class="menu-item-title">Вийти з системи</div>
+                                <div class="menu-item-desc">Завершити сеанс</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Domains Section -->
+            <div class="menu-section">
+                <div class="menu-section-title" onclick="toggleMenuSection('domains')">
+                    <i class="bi bi-globe"></i>
+                    <span>Домени</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="menu-items" id="domains-items">
+                    <a href="/pages/domains/register.php" class="menu-item">
+                        <i class="bi bi-plus-circle"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Реєстрація доменів</div>
+                            <div class="menu-item-desc">Зареєструйте домен для вашого сайту</div>
+                        </div>
+                    </a>
+                    <a href="/pages/domains/transfer.php" class="menu-item">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Трансфер доменів</div>
+                            <div class="menu-item-desc">Перенесіть домен до нас</div>
+                        </div>
+                    </a>
+                    <a href="/pages/domains/whois.php" class="menu-item">
+                        <i class="bi bi-search"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">WHOIS перевірка</div>
+                            <div class="menu-item-desc">Інформація про домен</div>
+                        </div>
+                    </a>
+                    <a href="/pages/domains/dns.php" class="menu-item">
+                        <i class="bi bi-diagram-3"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">DNS перевірка</div>
+                            <div class="menu-item-desc">Перевірка DNS записів</div>
+                        </div>
+                    </a>
+                    <a href="/pages/domains/domains.php" class="menu-item">
+                        <i class="bi bi-list-ul"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Всі домени</div>
+                            <div class="menu-item-desc">Перегляд доменних зон</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hosting Section -->
+            <div class="menu-section">
+                <div class="menu-section-title" onclick="toggleMenuSection('hosting')">
+                    <i class="bi bi-server"></i>
+                    <span>Хостинг</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="menu-items" id="hosting-items">
+                    <a href="/pages/hosting/shared.php" class="menu-item">
+                        <i class="bi bi-share"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Спільний хостинг</div>
+                            <div class="menu-item-desc">Оптимальний для сайтів</div>
+                        </div>
+                    </a>
+                    <a href="/pages/hosting/reseller.php" class="menu-item">
+                        <i class="bi bi-people"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Реселер хостинг</div>
+                            <div class="menu-item-desc">Продавайте хостинг клієнтам</div>
+                        </div>
+                    </a>
+                    <a href="/pages/hosting/cloud.php" class="menu-item">
+                        <i class="bi bi-cloud"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Хмарне сховище</div>
+                            <div class="menu-item-desc">Зберігайте файли в хмарі</div>
+                        </div>
+                    </a>
+                    <a href="/pages/hosting/hosting.php" class="menu-item">
+                        <i class="bi bi-grid"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Всі тарифи</div>
+                            <div class="menu-item-desc">Порівняння планів</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- VDS/VPS Section -->
+            <div class="menu-section">
+                <div class="menu-section-title" onclick="toggleMenuSection('vds')">
+                    <i class="bi bi-pc-display"></i>
+                    <span>VDS/VPS</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="menu-items" id="vds-items">
+                    <a href="/pages/vds/virtual.php" class="menu-item">
+                        <i class="bi bi-cpu"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Віртуальні сервери</div>
+                            <div class="menu-item-desc">VPS на KVM</div>
+                        </div>
+                    </a>
+                    <a href="/pages/vds/dedicated.php" class="menu-item">
+                        <i class="bi bi-pc-display-horizontal"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Виділені сервери</div>
+                            <div class="menu-item-desc">Фізичні сервери</div>
+                        </div>
+                    </a>
+                    <a href="/pages/vds/vds-calc.php" class="menu-item">
+                        <i class="bi bi-calculator"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Калькулятор VDS</div>
+                            <div class="menu-item-desc">Розрахунок вартості</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tools Section -->
+            <div class="menu-section">
+                <div class="menu-section-title" onclick="toggleMenuSection('tools')">
+                    <i class="bi bi-tools"></i>
+                    <span>Інструменти</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="menu-items" id="tools-items">
+                    <a href="/pages/tools/site-check.php" class="menu-item">
+                        <i class="bi bi-globe2"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Перевірка сайту</div>
+                            <div class="menu-item-desc">Доступність сайту</div>
+                        </div>
+                    </a>
+                    <a href="/pages/tools/ip-check.php" class="menu-item">
+                        <i class="bi bi-router"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Перевірка IP</div>
+                            <div class="menu-item-desc">Геолокація та безпека</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="menu-section">
+                <div class="menu-section-title" onclick="toggleMenuSection('info')">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Інформація</span>
+                    <i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <div class="menu-items" id="info-items">
+                    <a href="/pages/info/about.php" class="menu-item">
+                        <i class="bi bi-building"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Про компанію</div>
+                            <div class="menu-item-desc">Наша історія та місія</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/quality.php" class="menu-item">
+                        <i class="bi bi-shield-check"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Гарантія якості</div>
+                            <div class="menu-item-desc">SLA та стандарти</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/rules.php" class="menu-item">
+                        <i class="bi bi-file-text"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Правила надання послуг</div>
+                            <div class="menu-item-desc">Умови використання</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/legal.php" class="menu-item">
+                        <i class="bi bi-briefcase"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Юридична інформація</div>
+                            <div class="menu-item-desc">Реквізити компанії</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/faq.php" class="menu-item">
+                        <i class="bi bi-question-circle"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Часті питання</div>
+                            <div class="menu-item-desc">Відповіді на питання</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/ssl.php" class="menu-item">
+                        <i class="bi bi-shield-lock"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">SSL сертифікати</div>
+                            <div class="menu-item-desc">Захист та довіра</div>
+                        </div>
+                    </a>
+                    <a href="/pages/info/complaints.php" class="menu-item">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">Скарги та пропозиції</div>
+                            <div class="menu-item-desc">Зворотний зв'язок</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="/pages/hosting/shared.php" class="quick-action-btn">
+                    <i class="bi bi-server me-2"></i>
+                    Замовити хостинг
+                </a>
+                <a href="/pages/domains/register.php" class="quick-action-btn">
+                    <i class="bi bi-globe me-2"></i>
+                    Купити домен
+                </a>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="menu-section">
+                <div class="menu-section-title">
+                    <i class="bi bi-telephone"></i>
+                    <span>Контакти</span>
+                </div>
+                <div class="menu-items show">
+                    <div class="menu-item">
+                        <i class="bi bi-telephone"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">+380 67 123 45 67</div>
+                            <div class="menu-item-desc">Цілодобово</div>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <i class="bi bi-envelope"></i>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">info@stormhosting.ua</div>
+                            <div class="menu-item-desc">Підтримка</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Flash Messages -->
-    <?php echo getFlashMessage(); ?>
-    
-    <!-- Main Content -->
-    <main id="main-content" class="main-content"><?php
+    <!-- Modal Auth JS (только для неавторизованных пользователей) -->
+    <?php if (!$user_logged_in): ?>
+        <script src="/assets/js/modal-auth.js"></script>
+    <?php endif; ?>
+
+    <!-- Header JavaScript -->
+    <script>
+        // Menu Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const slideMenu = document.getElementById('slideMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const menuClose = document.getElementById('menuClose');
+
+            // Open menu
+            function openMenu() {
+                slideMenu.classList.add('open');
+                menuOverlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Close menu
+            function closeMenu() {
+                slideMenu.classList.remove('open');
+                menuOverlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+
+            // Event listeners
+            menuToggle.addEventListener('click', openMenu);
+            menuClose.addEventListener('click', closeMenu);
+            menuOverlay.addEventListener('click', closeMenu);
+
+            // Close menu on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && slideMenu.classList.contains('open')) {
+                    closeMenu();
+                }
+            });
+
+            // Initialize Auth Modal only for non-logged users
+            <?php if (!$user_logged_in): ?>
+                if (typeof AuthModal !== 'undefined') {
+                    window.authModal = new AuthModal();
+                }
+            <?php endif; ?>
+        });
+
+        // Toggle menu sections
+        function toggleMenuSection(sectionId) {
+            const items = document.getElementById(sectionId + '-items');
+            const title = event.currentTarget;
+            const chevron = title.querySelector('.bi-chevron-down');
+            
+            if (items.classList.contains('show')) {
+                items.classList.remove('show');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                // Close all other sections
+                document.querySelectorAll('.menu-items.show').forEach(item => {
+                    if (item.id !== sectionId + '-items' && !item.closest('.menu-section').querySelector('.menu-section-title').textContent.includes('Контакти') && !item.closest('.menu-section').querySelector('.menu-section-title').textContent.includes('Мій кабінет')) {
+                        item.classList.remove('show');
+                    }
+                });
+                document.querySelectorAll('.bi-chevron-down').forEach(icon => {
+                    if (icon !== chevron) {
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+                
+                // Open current section
+                items.classList.add('show');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
+
+    <?php if (isset($additional_js) && is_array($additional_js)): ?>
+        <?php foreach ($additional_js as $js_file): ?>
+            <script src="<?php echo htmlspecialchars($js_file); ?>"></script>
+        <?php endforeach; ?>
+    <?php endif; ?>

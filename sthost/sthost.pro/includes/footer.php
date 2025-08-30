@@ -1,140 +1,109 @@
 </main>
     
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+        }
+        
+        body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Скрываем возможные стрелки навигации или debug элементы */
+.arrow-up,
+.arrow-down,
+.scroll-indicator,
+.back-to-top,
+.floating-arrow {
+    display: none !important;
+}
+
+/* Убираем возможные margin/padding снизу страницы */
+html, body {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+        
+        .footer {
+            background: #343a40;
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer a {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+    </style>
     <!-- Footer -->
-    <footer class="footer bg-dark text-light">
-        <div class="footer-top">
-            <div class="container">
-                <div class="row">
-                    <!-- О компании -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="footer-widget">
-                            <h5 class="widget-title"><?php echo t('footer_about_title'); ?></h5>
-                            <div class="footer-logo mb-3">
-                                <img src="/assets/images/logos/logo-white.svg" alt="StormHosting UA" height="30">
-                                <span class="brand-text">Storm<span class="text-primary">Hosting</span> UA</span>
-                            </div>
-                            <p class="widget-text"><?php echo t('footer_about_text'); ?></p>
-                            <div class="social-links">
-                                <a href="https://t.me/stormhosting_ua" target="_blank" rel="noopener" class="social-link telegram">
-                                    <i class="bi bi-telegram"></i>
-                                </a>
-                                <a href="https://facebook.com/stormhosting.ua" target="_blank" rel="noopener" class="social-link facebook">
-                                    <i class="bi bi-facebook"></i>
-                                </a>
-                                <a href="https://twitter.com/stormhosting_ua" target="_blank" rel="noopener" class="social-link twitter">
-                                    <i class="bi bi-twitter"></i>
-                                </a>
-                                <a href="https://instagram.com/stormhosting.ua" target="_blank" rel="noopener" class="social-link instagram">
-                                    <i class="bi bi-instagram"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Услуги -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <div class="footer-widget">
-                            <h5 class="widget-title"><?php echo t('footer_services_title'); ?></h5>
-                            <ul class="footer-links">
-                                <li><a href="/hosting/shared"><?php echo t('hosting_shared'); ?></a></li>
-                                <li><a href="/hosting/cloud"><?php echo t('hosting_cloud'); ?></a></li>
-                                <li><a href="/hosting/reseller"><?php echo t('hosting_reseller'); ?></a></li>
-                                <li><a href="/vds/virtual"><?php echo t('vds_virtual'); ?></a></li>
-                                <li><a href="/vds/dedicated"><?php echo t('vds_dedicated'); ?></a></li>
-                                <li><a href="/domains/register"><?php echo t('domains_register'); ?></a></li>
-                                <li><a href="/info/ssl">SSL <?php echo t('certificates'); ?></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Поддержка -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <div class="footer-widget">
-                            <h5 class="widget-title"><?php echo t('footer_support_title'); ?></h5>
-                            <ul class="footer-links">
-                                <li><a href="/info/faq"><?php echo t('info_faq'); ?></a></li>
-                                <li><a href="/tools/site-check"><?php echo t('tools_site_check'); ?></a></li>
-                                <li><a href="/tools/ip-check"><?php echo t('tools_ip_check'); ?></a></li>
-                                <li><a href="/info/rules"><?php echo t('info_rules'); ?></a></li>
-                                <li><a href="/info/legal"><?php echo t('info_legal'); ?></a></li>
-                                <li><a href="/info/complaints"><?php echo t('info_complaints'); ?></a></li>
-                                <li><a href="/info/quality"><?php echo t('info_quality'); ?></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Информация -->
-                    <div class="col-lg-2 col-md-6 mb-4">
-                        <div class="footer-widget">
-                            <h5 class="widget-title"><?php echo t('nav_info'); ?></h5>
-                            <ul class="footer-links">
-                                <li><a href="/info/about"><?php echo t('info_about'); ?></a></li>
-                                <li><a href="/contacts"><?php echo t('nav_contacts'); ?></a></li>
-                                <li><a href="/info/advertising"><?php echo t('info_advertising'); ?></a></li>
-                                <li><a href="/sitemap.xml">Sitemap</a></li>
-                                <li><a href="/rss.xml">RSS</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Контакты -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="footer-widget">
-                            <h5 class="widget-title"><?php echo t('footer_contacts_title'); ?></h5>
-                            <div class="contact-info">
-                                <div class="contact-item">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span><?php echo t('ukraine'); ?>, <?php echo t('dnipro'); ?></span>
-                                </div>
-                                <div class="contact-item">
-                                    <i class="bi bi-telephone"></i>
-                                    <a href="tel:+380XXXXXXXXX">+380 XX XXX XX XX</a>
-                                </div>
-                                <div class="contact-item">
-                                    <i class="bi bi-envelope"></i>
-                                    <a href="mailto:<?php echo SITE_EMAIL; ?>"><?php echo SITE_EMAIL; ?></a>
-                                </div>
-                                <div class="contact-item">
-                                    <i class="bi bi-telegram"></i>
-                                    <a href="https://t.me/stormhosting_ua" target="_blank">@stormhosting_ua</a>
-                                </div>
-                                <div class="contact-item">
-                                    <i class="bi bi-clock"></i>
-                                    <span><?php echo t('contacts_work_hours'); ?>: <?php echo t('contacts_24_7'); ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+   <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5 class="fw-bold mb-3">StormHosting UA</h5>
+                <p>Надійний хостинг провайдер для вашого онлайн бізнесу. Ми забезпечуємо стабільну роботу ваших сайтів 24/7.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-light"><i class="bi bi-telegram fs-4"></i></a>
+                    <a href="#" class="text-light"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="text-light"><i class="bi bi-twitter fs-4"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="fw-bold mb-3">Послуги</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/hosting">Хостинг</a></li>
+                    <li><a href="/vds">VDS/VPS</a></li>
+                    <li><a href="/domains">Домени</a></li>
+                    <li><a href="#">SSL сертифікати</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="fw-bold mb-3">Підтримка</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="/contacts">Контакти</a></li>
+                    <li><a href="#">Документація</a></li>
+                    <li><a href="#">Статус серверів</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <h6 class="fw-bold mb-3">Контакти</h6>
+                <div class="d-flex mb-2">
+                    <i class="bi bi-geo-alt me-2"></i>
+                    <span>Україна, Дніпро</span>
+                </div>
+                <div class="d-flex mb-2">
+                    <i class="bi bi-envelope me-2"></i>
+                    <span>info@sthost.pro</span>
+                </div>
+                <div class="d-flex mb-2">
+                    <i class="bi bi-telephone me-2"></i>
+                    <span>+380 XX XXX XX XX</span>
                 </div>
             </div>
         </div>
         
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <p class="copyright mb-0">
-                            &copy; <?php echo date('Y'); ?> StormHosting UA. <?php echo t('footer_copyright'); ?>.
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="footer-bottom-right">
-                            <div class="payment-methods">
-                                <img src="/assets/images/payment/visa.svg" alt="Visa" height="20">
-                                <img src="/assets/images/payment/mastercard.svg" alt="Mastercard" height="20">
-                                <img src="/assets/images/payment/liqpay.svg" alt="LiqPay" height="20">
-                                <img src="/assets/images/payment/privat24.svg" alt="Privat24" height="20">
-                            </div>
-                            <div class="developed-by">
-                                <small><?php echo t('footer_developed_by'); ?> <a href="https://stormhosting.ua" target="_blank">StormHosting UA</a></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <hr class="my-4">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; <?php echo date('Y'); ?> StormHosting UA. Всі права захищені.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <small class="text-muted">Розроблено з ❤️ в Україні</small>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
     
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="<?php echo t('back_to_top'); ?>">
@@ -182,23 +151,6 @@
         gtag('js', new Date());
         gtag('config', 'GA_MEASUREMENT_ID');
     </script>
-    
-    <!-- Yandex.Metrica (замените на ваш ID) -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-        
-        ym(XXXXXXXX, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:true
-        });
-    </script>
-    <noscript>
-        <div><img src="https://mc.yandex.ru/watch/XXXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div>
-    </noscript>
     
     <!-- Inline скрипты -->
     <script>

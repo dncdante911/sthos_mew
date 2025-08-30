@@ -1,5 +1,6 @@
-
 <?php
+//echo "CONFIG LOADED<br>";
+//exit;
 // Защита от прямого доступа
 if (!defined('SECURE_ACCESS')) {
     die('Direct access not permitted');
@@ -50,6 +51,11 @@ function sanitizeInput($data) {
     return $data;
 }
 
+function t($key, $default = '') {
+    global $translations;
+    return $translations[$key] ?? $default;
+}
+
 // Функция валидации email
 function validateEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
@@ -74,8 +80,8 @@ define('LIQPAY_PRIVATE_KEY', 'YOUR_LIQPAY_PRIVATE_KEY');
 
 // ispmanager настройки
 define('ISPMANAGER_URL', 'https://cp.sthost.pro');
-define('ISPMANAGER_USER', 'YOUR_ISPMANAGER_USER');
-define('ISPMANAGER_PASS', 'YOUR_ISPMANAGER_PASS');
+define('ISPMANAGER_USER', 'root');
+define('ISPMANAGER_PASS', '0607Dm$157');
 
 // FOSSBilling настройки
 define('FOSSBILLING_URL', 'https://bill.sthost.pro');
@@ -101,13 +107,15 @@ ini_set('session.cookie_secure', 1);
 ini_set('session.cookie_samesite', 'Strict');
 
 // Запуск сессий
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 // Регенерация ID сессии для защиты от фиксации
-if (!isset($_SESSION['initiated'])) {
-    session_regenerate_id(true);
-    $_SESSION['initiated'] = true;
-}
+//if (!isset($_SESSION['initiated'])) {
+//    session_regenerate_id(true);
+//    $_SESSION['initiated'] = true;
+//}
 
 // Установка языка по умолчанию
 if (!isset($_SESSION['lang'])) {
