@@ -436,7 +436,7 @@ $page = $page_parts[1] ?? '';
             <div class="container">
                 <!-- Brand Logo -->
                 <a class="navbar-brand" href="/">
-                    <img src="/assets/images/Black.png" class="brand-logo">
+                <!--    <img src="/assets/images/Black.png" class="brand-logo">-->
                     <span>StormHosting UA</span>
                 </a>
 
@@ -780,14 +780,14 @@ $page = $page_parts[1] ?? '';
                     <div class="menu-item">
                         <i class="bi bi-telephone"></i>
                         <div class="menu-item-content">
-                            <div class="menu-item-title">+380 67 123 45 67</div>
+                            <div class="menu-item-title">+380 99 623 96 37</div>
                             <div class="menu-item-desc">Цілодобово</div>
                         </div>
                     </div>
                     <div class="menu-item">
                         <i class="bi bi-envelope"></i>
                         <div class="menu-item-content">
-                            <div class="menu-item-title">info@stormhosting.ua</div>
+                            <div class="menu-item-title">support@sthost.pro</div>
                             <div class="menu-item-desc">Підтримка</div>
                         </div>
                     </div>

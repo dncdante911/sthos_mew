@@ -231,6 +231,205 @@ html, body {
     </script>
     <?php endif; ?>
     
+
+<!-- Простой чат - добавьте в footer.php -->
+<style>
+.simple-chat-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    border: none;
+    color: white;
+    cursor: pointer;
+    z-index: 9999;
+    font-size: 24px;
+}
+.simple-chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 9999;
+}
+.chat-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+}
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+.chat-input {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+}
+.chat-input button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+}
+.user-msg {
+    background: #667eea;
+    color: white;
+    margin-left: auto;
+}
+.bot-msg {
+    background: white;
+    border: 1px solid #eee;
+}
+</style>
+
+<button class="simple-chat-btn" onclick="toggleSimpleChat()" id="chatBtn">💬</button>
+
+<div class="simple-chat-window" id="chatWindow">
+    <div class="chat-header">
+        <h4>Техподдержка StormHosting</h4>
+        <button onclick="toggleSimpleChat()" style="background: none; border: none; color: white; float: right; cursor: pointer;">×</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot-msg">Привет! Чем могу помочь?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Напишите сообщение..." onkeypress="if(event.key==='Enter') sendSimpleMessage()">
+        <button onclick="sendSimpleMessage()">Отправить</button>
+    </div>
+</div>
+
+
+
+<script>
+function toggleSimpleChat() {
+    const window = document.getElementById('chatWindow');
+    const isVisible = window.style.display === 'flex';
+    window.style.display = isVisible ? 'none' : 'flex';
+}
+
+function sendSimpleMessage() {
+    const input = document.getElementById('chatInput');
+    const messages = document.getElementById('chatMessages');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    // Добавляем сообщение пользователя
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user-msg';
+    userMsg.textContent = text;
+    messages.appendChild(userMsg);
+    
+    input.value = '';
+    
+    // Проверяем ключевые слова для подключения оператора
+    const lowerText = text.toLowerCase();
+    const operatorKeywords = ['оператор', 'техподдержка', 'тех поддержка', 'живой человек', 'человек', 'специалист', 'менеджер', 'помощь специалиста', 'связаться с оператором'];
+    const needOperator = operatorKeywords.some(keyword => lowerText.includes(keyword));
+    
+    // Простые автоответы
+    setTimeout(() => {
+        const botMsg = document.createElement('div');
+        botMsg.className = 'message bot-msg';
+        
+        if (needOperator) {
+            botMsg.innerHTML = `
+                <strong>Подключаю к оператору...</strong><br>
+                Ваш запрос передан специалисту техподдержки.<br>
+                <small>В рабочее время ответим в течение 5-10 минут.<br>
+                Также можете позвонить: +380 99 623-96-37</small>
+            `;
+            
+            // Специальное уведомление для техподдержки
+            notifySupport(text, 'ЗАПРОС ОПЕРАТОРА', true);
+            
+        } else if (lowerText.includes('привет')) {
+            botMsg.innerHTML = 'Привет! Чем могу помочь?<br><small>Напишите "оператор" для связи со специалистом</small>';
+        } else if (lowerText.includes('хостинг')) {
+            botMsg.innerHTML = 'По вопросам хостинга обращайтесь:<br>📧 support@sthost.pro<br>📞 +380 99 623-96-37<br><small>Или напишите "оператор" для прямой связи</small>';
+        } else if (lowerText.includes('домен')) {
+            botMsg.innerHTML = 'Вопросы по доменам:<br>📧 sales@sthost.pro<br>📞 +380 97 714-19-80<br><small>Или напишите "техподдержка" для связи со специалистом</small>';
+        } else if (lowerText.includes('ssl')) {
+            botMsg.innerHTML = 'SSL сертификаты устанавливаем бесплатно!<br>📧 ssl@sthost.pro<br><small>Для консультации напишите "оператор"</small>';
+        } else if (lowerText.includes('проблема') || lowerText.includes('не работает') || lowerText.includes('ошибка')) {
+            botMsg.innerHTML = `
+                <strong>Понял, у вас техническая проблема.</strong><br>
+                Для быстрого решения напишите "оператор" - подключу специалиста.<br>
+                <small>Или опишите проблему подробнее</small>
+            `;
+        } else {
+            botMsg.innerHTML = `
+                Спасибо за сообщение!<br>
+                📧 support@sthost.pro<br>
+                📞 +380 99 623-96-37<br>
+                <small>Для прямой связи напишите "оператор"</small>
+            `;
+        }
+        
+        messages.appendChild(botMsg);
+        messages.scrollTop = messages.scrollHeight;
+        
+        // Обычное уведомление для всех сообщений
+        if (!needOperator) {
+            notifySupport(text, 'Новое сообщение в чате', false);
+        }
+        
+    }, 1000);
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// Функция уведомления техподдержки
+function notifySupport(message, subject, urgent) {
+    const formData = new FormData();
+    formData.append('message', message);
+    formData.append('subject', subject);
+    formData.append('urgent', urgent ? '1' : '0');
+    formData.append('page', window.location.href);
+    formData.append('time', new Date().toLocaleString('ru'));
+    formData.append('user_agent', navigator.userAgent);
+    
+    fetch('/chat/notify-support.php', {
+        method: 'POST',
+        body: formData
+    });
+}
+
+// Совместимость с существующими кнопками
+window.openChat = toggleSimpleChat;
+</script>
+
+
+
 </body>
 </html>
 
